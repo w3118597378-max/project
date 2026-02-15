@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cl.dao.SensitiveWordDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.cl.entity.SensitiveWordEntity" id="sensitiveWordMap">
+        <result property="content" column="content"/>
+    </resultMap>
+
+    <select id="selectListView"
+		resultType="com.cl.entity.view.SensitiveWordView" >
+
+		SELECT  sensitive_word.* FROM sensitive_word  sensitive_word 	        
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectView"
+		resultType="com.cl.entity.view.SensitiveWordView" >
+		SELECT * FROM sensitive_word  sensitive_word <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+
+
+
+</mapper>
