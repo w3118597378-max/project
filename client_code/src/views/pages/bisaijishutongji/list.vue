@@ -1,146 +1,186 @@
 <template>
-    <div class="list-page">
-        <div class="breadcrumb-wrapper" style="width: 100%;">
-            <div class="bread_view">
-                <el-breadcrumb separator="" class="breadcrumb">
-                    <el-breadcrumb-item class="first_breadcrumb" :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item class="second_breadcrumb" v-for="(item,index) in breadList" :key="index">{{item.name}}</el-breadcrumb-item>
-                </el-breadcrumb>
-            </div>
-            <div class="back_view" v-if="centerType">
-                <el-button class="back_btn" @click="backClick">返回</el-button>
-            </div>
-        </div>
-		<div class="list_search">
-			<div class="search_view">
-				<div class="search_label">
-					赛事名称：
-				</div>
-				<div class="search_box">
-					<el-input class="search_inp" v-model="searchQuery.saishimingcheng" placeholder="赛事名称"
-						clearable>
-					</el-input>
-				</div>
-			</div>
-			<div class="search_btn_view">
-				<el-button class="search_btn" @click="searchClick">搜索</el-button>
-				<el-button class="add_btn" v-if="btnAuth('bisaijishutongji','新增')" @click="addClick">新增</el-button>
-			</div>
-            <div class="chartBtn-row">
-                <el-button class="chart_btn" type="warning" @click="echartClick1" v-if="btnAuth('bisaijishutongji','比赛技术统计')">
-                    比赛技术统计
-                </el-button>
-            </div>
-		</div>
-
-
-
-                <div class="table_view">
-					<el-table v-loading="listLoading" class="data_table" :data="list" border :row-style="{'cursor':'pointer'}"
-						@row-click="tableDetailClick" :stripe='false'>
-						<el-table-column :resizable='true' align="center" header-align="center" type="selection" width="55" />
-						<el-table-column label="序号" width="120" :resizable='true' align="center" header-align="center">
-							<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
-						</el-table-column>
-						<el-table-column label="赛事名称" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.saishimingcheng}}
-							</template>
-						</el-table-column>
-						<el-table-column label="比赛时间" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.bisaishijian}}
-							</template>
-						</el-table-column>
-						<el-table-column label="比赛场地" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.bisaichangdi}}
-							</template>
-						</el-table-column>
-						<el-table-column label="球队名称" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.qiuduimingcheng}}
-							</template>
-						</el-table-column>
-						<el-table-column label="得分" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.defen}}
-							</template>
-						</el-table-column>
-						<el-table-column label="犯规" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.fangui}}
-							</template>
-						</el-table-column>
-						<el-table-column label="暂停" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.zanting}}
-							</template>
-						</el-table-column>
-						<el-table-column label="记录时间" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.jilushijian}}
-							</template>
-						</el-table-column>
-						<el-table-column label="裁判账号" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.caipanzhanghao}}
-							</template>
-						</el-table-column>
-						<el-table-column label="裁判姓名" :resizable='true' align="center" header-align="center">
-							<template #default="scope">
-								{{scope.row.caipanxingming}}
-							</template>
-						</el-table-column>
-					</el-table>
+    <div class="min-h-screen bg-slate-50">
+        <!-- 顶部橙色强调条 -->
+        <div class="h-1 bg-gradient-to-r from-orange-500 to-orange-400"></div>
+        
+        <!-- 主容器 -->
+        <div class="max-w-7xl mx-auto px-6 py-10">
+            <!-- 搜索区域卡片 -->
+            <div class="list_search">
+                <div class="search_content">
+                    <div class="search_form">
+                        <div class="search_view">
+                            <div class="search_label">
+                                <i class="el-icon-search"></i>
+                                <span class="label-text">赛事名称</span>
+                            </div>
+                            <div class="search_box">
+                                <el-input 
+                                    class="search_inp" 
+                                    v-model="searchQuery.saishimingcheng" 
+                                    placeholder="请输入赛事名称进行搜索..." 
+                                    clearable
+                                    prefix-icon="Search">
+                                </el-input>
+                            </div>
+                        </div>
+                        <div class="search_btn_view">
+                            <el-button class="search_btn" @click="searchClick" type="primary">
+                                <i class="el-icon-search"></i>
+                                搜索
+                            </el-button>
+                            <el-button class="add_btn" v-if="btnAuth('bisaijishutongji','新增')" @click="addClick">
+                                <i class="el-icon-plus"></i>
+                                新增记录
+                            </el-button>
+                        </div>
+                    </div>
+                    <div class="chartBtn-row">
+                        <el-button class="chart_btn" @click="echartClick1" v-if="btnAuth('bisaijishutongji','比赛技术统计')" type="warning">
+                            <i class="el-icon-data-line"></i>
+                            数据统计
+                        </el-button>
+                    </div>
                 </div>
+            </div>
 
-				<el-pagination
-					background
-					:layout="layouts.join(',')"
-					:total="total"
-					:page-size="listQuery.limit"
+            <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-2 mb-6">
+                <div class="grid grid-cols-2 gap-2">
+                    <button
+                        type="button"
+                        @click="goToTab('record')"
+                        class="h-12 rounded-lg flex items-center justify-center gap-2 font-semibold transition-all duration-200"
+                        :class="isRecordTab ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-700 hover:bg-slate-50'"
+                    >
+                        <i class="el-icon-trophy"></i>
+                        比赛记录
+                    </button>
+                    <button
+                        type="button"
+                        @click="goToTab('stats')"
+                        class="h-12 rounded-lg flex items-center justify-center gap-2 font-semibold transition-all duration-200"
+                        :class="isStatsTab ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-700 hover:bg-slate-50'"
+                    >
+                        <i class="el-icon-data-line"></i>
+                        比赛技术统计
+                    </button>
+                </div>
+            </div>
+
+            <!-- 表格区域卡片 -->
+            <div class="table-view">
+                <el-table v-loading="listLoading" class="data_table" :data="list" border :row-style="{'cursor':'pointer'}"
+                    @row-click="tableDetailClick" :stripe='false' :row-class-name="tableRowClassName">
+                    <el-table-column :resizable='true' align="center" header-align="center" type="selection" width="55" />
+                    <el-table-column label="序号" width="120" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
+                    </el-table-column>
+                    <el-table-column label="赛事名称" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.saishimingcheng}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="比赛时间" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.bisaishijian}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="比赛场地" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.bisaichangdi}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="球队名称" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            <div class="team-name-with-dot">
+                                <span class="team-dot"></span>
+                                {{scope.row.qiuduimingcheng}}
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="得分" :resizable='true' align="center" header-align="center" class-name="score-column">
+                        <template #default="scope">
+                            {{scope.row.defen}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="犯规" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.fangui}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="暂停" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.zanting}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="记录时间" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.jilushijian}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="裁判账号" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.caipanzhanghao}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="裁判姓名" :resizable='true' align="center" header-align="center">
+                        <template #default="scope">
+                            {{scope.row.caipanxingming}}
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+
+            <!-- 分页区域卡片 -->
+            <div class="pagination-container">
+                <el-pagination
+                    background
+                    :layout="layouts.join(',')"
+                    :total="total"
+                    :page-size="listQuery.limit"
                     v-model:current-page="listQuery.page"
-					prev-text="上一页"
-					next-text="下一页"
-					:hide-on-single-page="false"
-					@size-change="sizeChange"
-					@current-change="currentChange"/>
+                    prev-text="上一页"
+                    next-text="下一页"
+                    :hide-on-single-page="false"
+                    @size-change="sizeChange"
+                    @current-change="currentChange"/>
+            </div>
+        </div>
 
-
+        <!-- 弹窗组件 -->
+        <el-dialog v-model="preViewVisible" :title="'查看大图'" width="40%" destroy-on-close>
+            <div style="text-align:center">
+                <img :src="preViewUrl" style="max-width: 100%;" alt="">
+            </div>
+        </el-dialog>
+        
+        <!-- 统计图弹窗 -->
+        <el-dialog v-model="echartVisible" modal-class="chart-dialog-modal" class="chart-dialog" title="统计图" width="70%">
+            <div class="chart-wrapper">
+                <div class="chart" id="qiuduimingchengEchart1" style="width:100%;height:600px;"></div>
+            </div>
+            <template #footer>
+                <span class="formModel_btn_box">
+                    <el-button class="cancel_btn" @click="echartVisible=false">关闭</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
-
-    <el-dialog v-model="preViewVisible" :title="'查看大图'" width="40%" destroy-on-close>
-        <div style="text-align:center">
-            <img :src="preViewUrl" style="max-width: 100%;" alt="">
-        </div>
-    </el-dialog>
-    <!-- 统计图弹窗 -->
-    <el-dialog v-model="echartVisible" modal-class="chart-dialog-modal" class="chart-dialog" title="统计图" width="70%">
-        <div  class="chart-wrapper">
-            <div class="chart" id="qiuduimingchengEchart1" style="width:100%;height:600px;"></div>
-        </div>
-        <template #footer>
-            <span class="formModel_btn_box">
-                <el-button class="cancel_btn" @click="echartVisible=false">关闭</el-button>
-            </span>
-        </template>
-    </el-dialog>
 </template>
 
 <script setup>
-	import {
-		ref,
-		getCurrentInstance,
-		nextTick,
+    import {
+        ref,
+        getCurrentInstance,
+        nextTick,
         computed,
         inject,
-	} from 'vue';
+    } from 'vue';
     const moment = window.moment
-	import {
-		useRoute,
-		useRouter
-	} from 'vue-router';
+    import {
+        useRoute,
+        useRouter
+    } from 'vue-router';
     import {
         useStore
     } from 'vuex';
@@ -150,6 +190,16 @@
 	const router = useRouter()
 	const route = useRoute()
     const baseUrl = ref(context.$config.url)
+
+    const isRecordTab = computed(() => route.path.includes('bisaichengjiList'))
+    const isStatsTab = computed(() => route.path.includes('bisaijishutongjiList'))
+    const goToTab = (tab) => {
+        if (tab === 'record') {
+            router.push('/index/bisaichengjiList')
+        } else {
+            router.push('/index/bisaijishutongjiList')
+        }
+    }
 	//基础信息
 	const tableName = 'bisaijishutongji'
 	const formName = '比赛技术统计'
@@ -355,6 +405,10 @@
                 };
 			})
 		})
+	}
+	// 表格行样式处理
+	const tableRowClassName = ({row, rowIndex}) => {
+		return 'table-row-hover'
 	}
 	const init = async() => {
 		if(route.query.centerType){

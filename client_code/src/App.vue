@@ -25,6 +25,8 @@
 <style lang="scss">
 	body {
 		margin: 0;
+		padding: 0;
+		background-color: var(--slate-50);
 	}
 	* {
 		box-sizing: border-box;
@@ -34,8 +36,9 @@
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		// text-align: center;
-		color: #2c3e50;
+		color: var(--slate-700);
+		background-color: var(--slate-50);
+		min-height: 100vh;
 	}
 
 	nav {
@@ -43,10 +46,10 @@
 
 		a {
 			font-weight: bold;
-			color: #2c3e50;
+			color: var(--slate-700);
 
 			&.router-link-exact-active {
-				color: #42b983;
+				color: var(--orange-500);
 			}
 		}
 	}
