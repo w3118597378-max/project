@@ -1,42 +1,63 @@
 <template>
-	<div class="menu_wrapper" :class="{'menu_wrapper_collapse':collapse}">
+	<aside class="admin_sidebar" :class="{ 'admin_sidebar--collapse': collapse }">
+		<div class="admin_sidebar__logo" v-if="!collapse">
+			<div class="admin_sidebar__logoIcon">
+				<Trophy class="lucide-icon" />
+			</div>
+			<div class="admin_sidebar__logoText">
+				<div class="admin_sidebar__title">篮球管理系统</div>
+				<div class="admin_sidebar__subtitle">Basketball Admin</div>
+			</div>
+		</div>
 		<el-scrollbar wrap-class="scrollbar-wrapper" class="menu_scrollbar">
 			<el-menu :default-openeds="[]" :unique-opened="true" :default-active="menuIndex" class="menu_view"
 				:collapse="collapse">
-				<el-menu-item class="first-item" index="/" @click="menuHandler('')">
-					<i class="iconfont icon-zhuye2" v-if="collapse?false:true"></i>
-					<template #title>
-						<span>首页</span>
-					</template>
+				<el-menu-item class="nav_item" index="/" @click="menuHandler('')">
+					<div class="nav_item__inner" :class="{ 'nav_item__inner--active': isActive('/') }">
+						<div class="nav_item__left">
+							<Home class="lucide-icon" v-if="!collapse" />
+							<span class="nav_item__text">首页</span>
+						</div>
+						<ChevronRight class="lucide-icon nav_item__chevron" v-if="!collapse && isActive('/')" />
+					</div>
 				</el-menu-item>
-                <template v-for=" (item,index) in menuList.backMenu">
-                    <el-sub-menu   class="first-item" :index="item.menu">
-                        <template #title>
-                            <i class="iconfont" :class="item.fontClass" v-if="collapse?false:true"></i>
-                            <span>{{ item.menu }}</span>
-                        </template>
-                        <el-menu-item class="second-item" v-for=" (child,sort) in item.child" :key="sort"
-                            :index="getPath(child.classname||child.tableName,child.menuJump)"
-                            @click="menuHandler(child.classname||child.tableName,child.menuJump)">{{ child.menu }}
-                        </el-menu-item>
-                    </el-sub-menu>
-                </template>
+				<template v-for="(item,index) in menuList.backMenu" :key="index">
+					<el-sub-menu class="nav_group" :index="item.menu">
+						<template #title>
+							<div class="nav_item__inner">
+								<div class="nav_item__left">
+									<component :is="getMenuIcon(item.menu)" class="lucide-icon" v-if="!collapse && getMenuIcon(item.menu)" />
+									<i class="iconfont" :class="item.fontClass" v-else-if="!collapse"></i>
+									<span class="nav_item__text">{{ item.menu }}</span>
+								</div>
+							</div>
+						</template>
+						<el-menu-item class="nav_item nav_item--child" v-for="(child,sort) in item.child" :key="sort"
+							:index="getPath(child.classname||child.tableName,child.menuJump)"
+							@click="menuHandler(child.classname||child.tableName,child.menuJump)">
+							<div class="nav_item__inner" :class="{ 'nav_item__inner--active': isActive(getPath(child.classname||child.tableName,child.menuJump)) }">
+								<div class="nav_item__left">
+									<span class="nav_item__text">{{ child.menu }}</span>
+								</div>
+								<ChevronRight class="lucide-icon nav_item__chevron" v-if="!collapse && isActive(getPath(child.classname||child.tableName,child.menuJump))" />
+							</div>
+						</el-menu-item>
+					</el-sub-menu>
+				</template>
 			</el-menu>
 		</el-scrollbar>
-	</div>
+	</aside>
 </template>
 
 <script setup>
 	import menu from '@/utils/menu'
+	import { Home, Trophy, Users, ShieldAlert, ClipboardList, BarChart3, Scale, CalendarDays, Image, MessageCircle, ChevronRight } from 'lucide-vue-next'
 	import {
 		ref,
 		toRefs,
 		getCurrentInstance,
-		nextTick,
-        watch
+		watch
 	} from 'vue';
-	import { useStore } from 'vuex'
-	const store = useStore()
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	//props
 	const props = defineProps({
@@ -48,6 +69,30 @@
 	//data
 	const menuList = ref([])
 	const role = ref('')
+
+	const iconMap = {
+		'首页': Home,
+		'球队队长管理': Users,
+		'论坛举报管理': ShieldAlert,
+		'普级比赛结果管理': ClipboardList,
+		'比赛技术统计管理': BarChart3,
+		'裁判员管理': Scale,
+		'篮球赛事管理': Trophy,
+		'轮播图管理': Image,
+		'敏感词管理': ShieldAlert,
+		'论坛类型管理': MessageCircle,
+		'普级申请管理': ClipboardList,
+		'加入球队管理': Users,
+		'比赛报名管理': ClipboardList,
+		'参赛学生管理': Users,
+		'比赛成绩管理': BarChart3,
+		'互动交流管理': MessageCircle,
+		'球队排行榜管理': BarChart3,
+		'竞赛日程管理': CalendarDays,
+	}
+	const getMenuIcon = (menuName) => {
+		return iconMap[menuName] || null
+	}
 	//权限验证
 	const btnAuth = (e,a)=>{
 		return context?.$toolUtil.isAuth(e,a)
@@ -73,6 +118,9 @@
     },{
         immediate:true
     })
+	const isActive = (path) => {
+		return menuIndex.value === path
+	}
 	const getPath = (name,menuJump) => {
         if(name == 'center'){
             return `/${role.value}Center`
@@ -94,316 +142,169 @@
 </script>
 
 <style>
-  .main-container {
-    margin-left: 250px;
-     background-color:none;
-    margin-top: 0px;
-    padding: 1px;
-    min-height: calc(100vh - 0px);
- background: linear-gradient( 168deg, #E3E5E6 14%, #F1E9C5 80%);
-  
-}
-.menu_wrapper{
-      background-color:none;
-    background: linear-gradient( 168deg, #E3E5E6 14%, #F1E9C5 80%);
-    width: 250px;
-    position: fixed;
-    top:0px;
-    left: 0;
-    height: calc(100vh - 0px);
-    padding: 20px 0;
-    padding-top:20px;
-    padding-left:10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-}
-.menu_wrapper .menu_view {
-    background-color: var(--el-menu-bg-color);
-    border-right:none;
-    box-sizing: border-box;
-    list-style: none;
-    margin: 0;
-    padding-left: 0;
-    position: relative;
-}
+	.admin_sidebar {
+		width: 256px;
+		background: #ffffff;
+		border-right: 1px solid #e2e8f0;
+		position: sticky;
+		top: 0;
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		flex: 0 0 auto;
+	}
+	.admin_sidebar--collapse {
+		width: 64px;
+	}
 
-/** 首页 **/
-.menu_wrapper .el-menu-item {
-    align-items: center;
-    border-bottom: 0px solid transparent;
-    color: #000;
-    font-size: 16px;
- 
-}
-.menu_wrapper .el-menu-item:hover{
- background:none;
-}
-.menu_wrapper .el-menu-item.is-active{
-    background: var(--theme) !important; 
-    color: #fff !important; 
-    font-size: 16px !important; 
-    border-bottom: none;
+	.admin_sidebar__logo {
+		padding: 24px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		border-bottom: 1px solid #e2e8f0;
+	}
+	.admin_sidebar__logoIcon {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+		box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.25), 0 4px 6px -4px rgba(249, 115, 22, 0.25);
+		color: #ffffff;
+		flex: 0 0 auto;
+	}
+	.admin_sidebar__logoText {
+		min-width: 0;
+	}
+	.admin_sidebar__title {
+		font-size: 16px;
+		font-weight: 700;
+		color: #0f172a;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.admin_sidebar__subtitle {
+		margin-top: 4px;
+		font-size: 12px;
+		color: #64748b;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
 
-}
-.menu_wrapper .el-menu-item .iconfont{
-    margin-right: 10px;
-}
-/** 其他 **/
-.menu_wrapper .menu_view .first-item{
-    position: relative;
-}
-.menu_wrapper .menu_view .first-item .el-sub-menu__title{
-    color: #000;
-    font-size: 16px;
-}
-.menu_wrapper .menu_view .first-item .el-sub-menu__title:hover{
-    background:none;
-}
-.menu_wrapper .el-sub-menu.is-active .el-sub-menu__title{
-   
-    border-bottom: none;
-    font-size:16px;
-}
-.menu_wrapper .el-menu-item.is-active,.menu_wrapper .el-sub-menu.is-active .el-sub-menu__title {
-   
-    color: #fff!important;
-    font-size: 16px;
-}
-.menu_wrapper .el-menu-item:not(.is-disabled):focus,.menu_wrapper  .el-menu-item:not(.is-disabled):hover {
- background:none;
-}
-.menu_wrapper .menu_view .first-item .el-sub-menu__title .iconfont{
-    margin-right: 10px;
-}
-.menu_wrapper {
-    --el-menu-bg-color: none;
-    --el-menu-active-color: var(--theme-dark);
-}
-.menu_wrapper .el-menu-item .el-sub-menu__icon-more{
-    color: #fff;
-}
+	.menu_scrollbar {
+		flex: 1 1 auto;
+	}
 
-/** 二级盒子 **/
-.menu_wrapper .el-menu--popup {
-    border: none;
-    border-radius: var(--el-border-radius-small);
-    box-shadow: var(--el-box-shadow-light);
-    min-width: auto;
-    padding: 0px 0;
-    z-index: 100; 
-}
-.menu_wrapper li.el-menu-item.second-item {
-    padding-left:20px !important;
-    border-left:none;
-}
-.menu_wrapper li.el-menu-item.second-item:hover{
-  background:none;
-}
-.menu_wrapper li.el-menu-item.second-item.is-active{
-    background: var(--theme50) !important;
-    color: #333!important;
-}
-.menu_wrapper i.el-icon.el-sub-menu__icon-more {
-    color: #fff;
-}
-/* nb15 */
-.menu_wrapper ul.el-menu.el-menu--vertical.menu_view.el-menu--vertical {
-background: rgba(255,255,255,0.5);
-border-radius: 20px 20px 20px 20px;
-padding-top:40px;
-padding-bottom:40px;
-  min-height: calc(100vh - 20px);
-}
+	.menu_view {
+		border-right: none;
+		background: transparent;
+		padding: 12px;
+	}
 
-.menu_wrapper  .el-sub-menu__title {
-  position:relative!important;
-  padding-left:40px!important;
- 
-}
-.menu_wrapper .el-sub-menu__title::before {
-    content: '';
-    background: url(http://clfile.zggen.cn/20250827/3315fccd4aaf496eb5a1fe9d4989cfdc.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 90% 100%;
-    width:100%;
-    height: 100%;
-    text-align: center;
-    line-height: 100px !important;
-    font-size: 24px !important;
-    padding: 0px !important;
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
+	.lucide-icon {
+		width: 20px;
+		height: 20px;
+	}
 
-}
+	.nav_item,
+	.nav_group {
+		margin-bottom: 4px;
+	}
 
-.menu_wrapper i.iconfont{
-  color:#FFD85F;
-  z-index:1
-}
+	.nav_item__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 12px 16px;
+		border-radius: 10px;
+		color: #475569;
+		transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+	}
 
-.menu_wrapper .el-sub-menu__title span {
-  color:#FFFFFF;
-  z-index:1
-}
+	.nav_item__left {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		min-width: 0;
+	}
+	.nav_item__text {
+		font-size: 14px;
+		line-height: 20px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.nav_item__chevron {
+		color: #ea580c;
+		flex: 0 0 auto;
+	}
 
-.menu_wrapper ul.el-menu.el-menu--vertical.menu_view.el-menu--vertical li{
-  margin-bottom:10px;
-}
+	.el-menu-item.nav_item {
+		height: auto;
+		line-height: normal;
+		padding: 0 !important;
+		color: inherit;
+	}
+	.el-menu-item.nav_item:hover {
+		background: transparent;
+	}
+	.el-menu-item.nav_item.is-active {
+		background: transparent;
+	}
 
-.menu_wrapper li.el-menu-item.is-active.first-item {
-  position:relative!important;
-  padding-left:40px!important;
-  background:none!important;
-}
-.menu_wrapper li.el-menu-item.is-active.first-item::before {
-    content: '';
-    background: url(http://clfile.zggen.cn/20250827/3315fccd4aaf496eb5a1fe9d4989cfdc.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 90% 100%;
-    width:100%;
-    height: 100%;
-    text-align: center;
-    line-height: 100px !important;
-    font-size: 24px !important;
-    padding: 0px !important;
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
+	.el-sub-menu.nav_group > .el-sub-menu__title {
+		padding: 0 !important;
+		height: auto;
+		line-height: normal;
+		background: transparent;
+		border-radius: 10px;
+		color: inherit;
+	}
+	.el-sub-menu.nav_group > .el-sub-menu__title:hover {
+		background: transparent;
+	}
 
-}
+	.nav_item__inner:hover {
+		background: #f8fafc;
+		color: #0f172a;
+	}
 
-i.iconfont.icon-zhuye2 {
-  color:#FFD85F
-}
+	.el-menu-item.is-active .nav_item__inner,
+	.el-sub-menu.is-active > .el-sub-menu__title .nav_item__inner {
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 500;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+	}
 
-.menu_wrapper li.el-menu-item.is-active.first-item  span{
-  color:#ffff;
-  z-index:1;
-}
+	.nav_item--child .nav_item__inner {
+		padding-left: 28px;
+	}
 
-.menu_wrapper i.el-icon.el-sub-menu__icon-arrow {
-  position:absolute!important;
-  color:#fff;
-  top:49px;
-  right:90px;
-}
+	.admin_sidebar {
+		--el-menu-active-color: #ea580c;
+		--el-menu-hover-bg-color: transparent;
+		--el-menu-bg-color: transparent;
+	}
 
-.menu_wrapper li.el-menu-item.first-item {
-  position:relative!important;
-  padding-left:40px!important;
-  background:none!important;
-}
-.menu_wrapper li.el-menu-item.first-item::before {
-    content: '';
-    background: url(http://clfile.zggen.cn/20250827/3315fccd4aaf496eb5a1fe9d4989cfdc.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 90% 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    width:100%;
-    height: 100%;
-    text-align: center;
-    line-height: 100px !important;
-    font-size: 24px !important;
-    padding: 0px !important;
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
-
-}
-
-li.el-menu-item.first-item i.iconfont.icon-zhuye2 {
-  color:#FFD85F
-
-}
-
-.menu_wrapper li.el-menu-item.first-item span {
- color:#ffff;
-  z-index:1;
-
-}
-
-.menu_wrapper li.el-sub-menu.is-active.first-item ul.el-menu.el-menu--inline {
-background:#F0E6C9!important;
-  width:70%;
-  margin:auto;
-  border-radius: 5px 5px 5px 5px!important;
-}
-
-.menu_wrapper li.el-sub-menu.is-opened.first-item ul.el-menu.el-menu--inline{
-background:#F0E6C9!important;
-  width:90%;
-  margin:auto;
-  border-radius: 5px 5px 5px 5px!important;
-}
-
-
-
-
-
-.menu_wrapper li.el-menu-item.is-active.second-item {
-  
-background: #FFD85F!important;
-border-radius: 0px 0px 0px 0px;
-  color:#fff!important;
-  border:10px solid #F0E6C9;
-}
-.menu_wrapper li.el-sub-menu.is-active.is-opened.first-item .el-sub-menu__title {
-  position:relative!important;
-  padding-left:40px!important;
-}
-
-.menu_wrapper  .el-sub-menu__title {
-  position:relative!important;
-  padding-left:40px!important;
- 
-}
-.menu_wrapper li.el-sub-menu.is-active.is-opened.first-item .el-sub-menu__title::before {
-    content: '';
-    background: url(http://clfile.zggen.cn/20260107/ee5f04cead784fa380b9aea7e043fda2.png);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 90% 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    width:100%;
-    height: 100%;
-    text-align: center;
-    line-height: 100px !important;
-    font-size: 24px !important;
-    padding: 0px !important;
-    position: absolute !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    
-
-}
-
-li.el-sub-menu.is-active.is-opened.first-item .el-sub-menu__title i.iconfont.icon-common44 {
-  color:#fff;
-}
-.menu_wrapper li.el-sub-menu.is-active.is-opened.first-item  i {
-  color:#fff;
-}
-
-.menu_wrapper li.el-menu-item.is-active.second-item {
-    padding-left:10px!important;
-}
+	.el-menu--popup {
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+		padding: 8px;
+	}
+	.el-menu--popup .el-menu-item {
+		border-radius: 10px;
+	}
+	.el-menu--popup .el-menu-item:hover {
+		background: #f8fafc;
+	}
 </style>

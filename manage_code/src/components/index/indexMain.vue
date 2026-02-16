@@ -1,5 +1,5 @@
 <template>
-	<div style="height: 100%;">
+	<div class="admin_shell">
 		<index-aside :collapse="collapse" :class="collapse?'index-aside-collapse':'index-aside'"></index-aside>
 		<el-main class="main_view main-container index_transition" :class="collapse?'main_view-collapse':''">
 			<index-header :collapse="collapse" @collapseChange="collapseChange"></index-header>
@@ -68,6 +68,20 @@
 	// init()
 </script>
 <style lang="scss" scoped>
+	.admin_shell{
+		display: flex;
+		align-items: stretch;
+		height: 100vh;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	.main_view{
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: auto;
+	}
+
 	.index_transition{
 		transition:all .35s;
 	}

@@ -57,256 +57,101 @@
 				ref="table"
 				v-if="btnAuth('qiuduipaixingbang','查看')"
 				:data="list"
-				@row-click="listChange">
+				@row-click="listChange"
+				:show-header="false"
+				:header-cell-style="{ background: 'transparent', border: 'none', padding: '0' }"
+				:cell-style="{ border: 'none', padding: '8px 0' }">
 				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
 				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="jiaolianmingcheng"
-					label="教练名称">
 					<template #default="scope">
-						{{scope.row.jiaolianmingcheng}}
+						<div class="rank_index">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
 					</template>
 				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuduimingcheng"
-					label="球队名称">
+				<el-table-column min-width="600" :resizable='true' :sortable='false' align="left" header-align="left">
 					<template #default="scope">
-						{{scope.row.qiuduimingcheng}}
-					</template>
-				</el-table-column>
-				<el-table-column label="球队logo" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<div v-if="scope.row.qiuduilogo">
-							<el-image v-if="scope.row.qiuduilogo.substring(0,4)=='http'" preview-teleported
-								:preview-src-list="[scope.row.qiuduilogo.split(',')[0]]"
-								:src="scope.row.qiuduilogo.split(',')[0]" style="width:100px;height:100px"></el-image>
-							<el-image v-else preview-teleported
-								:preview-src-list="[$config.url+scope.row.qiuduilogo.split(',')[0]]"
-								:src="$config.url+scope.row.qiuduilogo.split(',')[0]" style="width:100px;height:100px">
-							</el-image>
+						<div class="rank_card">
+							<div class="rank_card__header">
+								<div class="rank_card__team">
+									<div class="rank_card__logo" v-if="scope.row.qiuduilogo" @click.stop>
+										<el-image v-if="scope.row.qiuduilogo.substring(0,4)=='http'" preview-teleported
+											:preview-src-list="[scope.row.qiuduilogo.split(',')[0]]"
+											:src="scope.row.qiuduilogo.split(',')[0]" style="width:64px;height:64px;border-radius:14px"></el-image>
+										<el-image v-else preview-teleported
+											:preview-src-list="[$config.url+scope.row.qiuduilogo.split(',')[0]]"
+											:src="$config.url+scope.row.qiuduilogo.split(',')[0]" style="width:64px;height:64px;border-radius:14px"></el-image>
+									</div>
+									<div class="rank_card__title">
+										<div class="rank_card__name">{{ scope.row.qiuduimingcheng }}</div>
+										<div class="rank_card__meta">教练：{{ scope.row.jiaolianmingcheng }}<span class="rank_card__dot">·</span>队长：{{ scope.row.duizhangxingming }}（{{ scope.row.duizhangzhanghao }}）</div>
+									</div>
+								</div>
+								<div class="rank_card__status">
+									<span class="rank_badge" :class="{
+										'rank_badge--pass': scope.row.sfsh=='是',
+										'rank_badge--reject': scope.row.sfsh=='否',
+										'rank_badge--wait': scope.row.sfsh=='待审核'
+									}">
+										{{ scope.row.sfsh }}
+									</span>
+								</div>
+							</div>
+
+							<div class="rank_card__stats">
+								<div class="rank_stat">
+									<div class="rank_stat__label">积分</div>
+									<div class="rank_stat__value rank_stat__value--primary">{{ scope.row.jifen }}</div>
+								</div>
+								<div class="rank_stat">
+									<div class="rank_stat__label">胜 / 负 / 平</div>
+									<div class="rank_stat__value">{{ scope.row.sheng }} / {{ scope.row.fu }} / {{ scope.row.ping }}</div>
+								</div>
+								<div class="rank_stat">
+									<div class="rank_stat__label">胜率</div>
+									<div class="rank_stat__value">{{ scope.row.shenglv }}</div>
+								</div>
+								<div class="rank_stat">
+									<div class="rank_stat__label">招募</div>
+									<div class="rank_stat__value">{{ scope.row.shifouzaizhaomu }}</div>
+								</div>
+								<div class="rank_stat">
+									<div class="rank_stat__label">创立时间</div>
+									<div class="rank_stat__value">{{ scope.row.chuanglishijian }}</div>
+								</div>
+								<div class="rank_stat" v-if="scope.row.qiuyi">
+									<div class="rank_stat__label">球衣</div>
+									<div class="rank_stat__value" @click.stop>
+										<el-image v-if="scope.row.qiuyi.substring(0,4)=='http'" preview-teleported
+											:preview-src-list="[scope.row.qiuyi.split(',')[0]]"
+											:src="scope.row.qiuyi.split(',')[0]" style="width:64px;height:64px;border-radius:14px"></el-image>
+										<el-image v-else preview-teleported
+											:preview-src-list="[$config.url+scope.row.qiuyi.split(',')[0]]"
+											:src="$config.url+scope.row.qiuyi.split(',')[0]" style="width:64px;height:64px;border-radius:14px"></el-image>
+									</div>
+								</div>
+							</div>
+
+							<div class="rank_card__footer">
+								<div class="rank_card__extra">收藏：{{ scope.row.storeupNumber }}<span class="rank_card__dot">·</span>评论：{{ scope.row.discussNumber }}</div>
+								<div class="rank_card__actions">
+									<el-button class="view_btn" type="info" v-if=" btnAuth('qiuduipaixingbang','查看')" @click.stop="infoClick(scope.row.id)">
+										详情
+									</el-button>
+									<el-button class="edit_btn" type="primary" v-if=" btnAuth('qiuduipaixingbang','修改')" @click.stop="editClick(scope.row.id,scope.row)">
+										修改
+									</el-button>
+									<el-button class="del_btn" type="danger" v-if="btnAuth('qiuduipaixingbang','删除')" @click.stop="delClick(scope.row.id,scope.row)">
+										删除
+									</el-button>
+									<el-button class="cross_btn" type="success" v-if="btnAuth('qiuduipaixingbang','申请加入')" @click.stop="jiaruqiuduiCrossAddOrUpdateHandler(scope.row,'cross','是','','','')">
+										申请加入
+									</el-button>
+									<el-button class="operate_btn" type="warning" v-if="btnAuth('qiuduipaixingbang','查看评论')" @click.stop="commentClick(scope.row.id)">
+										查看评论
+									</el-button>
+									<el-button v-if="btnAuth('qiuduipaixingbang','审核') && scope.row.sfsh=='待审核'" size="small" @click.stop="approvalClick(scope.row)">审核</el-button>
+								</div>
+							</div>
 						</div>
-						<div v-else>无图片</div>
-					</template>
-				</el-table-column>
-				<el-table-column label="球衣" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<div v-if="scope.row.qiuyi">
-							<el-image v-if="scope.row.qiuyi.substring(0,4)=='http'" preview-teleported
-								:preview-src-list="[scope.row.qiuyi.split(',')[0]]"
-								:src="scope.row.qiuyi.split(',')[0]" style="width:100px;height:100px"></el-image>
-							<el-image v-else preview-teleported
-								:preview-src-list="[$config.url+scope.row.qiuyi.split(',')[0]]"
-								:src="$config.url+scope.row.qiuyi.split(',')[0]" style="width:100px;height:100px">
-							</el-image>
-						</div>
-						<div v-else>无图片</div>
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuyuanrenshu"
-					label="球员人数">
-					<template #default="scope">
-						{{scope.row.qiuyuanrenshu}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="jifen"
-					label="积分">
-					<template #default="scope">
-						{{scope.row.jifen}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="sheng"
-					label="胜">
-					<template #default="scope">
-						{{scope.row.sheng}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="fu"
-					label="负">
-					<template #default="scope">
-						{{scope.row.fu}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="ping"
-					label="平">
-					<template #default="scope">
-						{{scope.row.ping}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="shenglv"
-					label="胜率">
-					<template #default="scope">
-						{{scope.row.shenglv}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="shifouzaizhaomu"
-					label="是否在招募">
-					<template #default="scope">
-						{{scope.row.shifouzaizhaomu}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="chuanglishijian"
-					label="创立时间">
-					<template #default="scope">
-						{{scope.row.chuanglishijian}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuduikouhao"
-					label="球队口号">
-					<template #default="scope">
-						{{scope.row.qiuduikouhao}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuyuanmingdan"
-					label="球员名单">
-					<template #default="scope">
-						{{scope.row.qiuyuanmingdan}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="duizhangzhanghao"
-					label="队长账号">
-					<template #default="scope">
-						{{scope.row.duizhangzhanghao}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="duizhangxingming"
-					label="队长姓名">
-					<template #default="scope">
-						{{scope.row.duizhangxingming}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="storeupNumber"
-					label="收藏数量">
-					<template #default="scope">
-						{{scope.row.storeupNumber}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="discussNumber"
-					label="评论数">
-					<template #default="scope">
-						{{scope.row.discussNumber}}
-					</template>
-				</el-table-column>
-				<el-table-column label="审核回复" min-width="140" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						{{scope.row.shhf}}
-					</template>
-				</el-table-column>
-				<el-table-column prop="sfsh" label="审核状态" min-width="140" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-                        <div v-if="scope.row.sfsh=='是'" style="text-align: center">
-                            <img src="@/assets/img/pass.png" style="width: 50px;"/>
-                            <div>通过</div>
-                        </div>
-                        <div v-else-if="scope.row.sfsh=='否'" style="text-align: center">
-                            <img src="@/assets/img/reject.png" style="width: 50px;"/>
-                            <div>未通过</div>
-                        </div>
-                        <div v-else-if="scope.row.sfsh=='待审核'" style="text-align: center">
-                            <img src="@/assets/img/wait.png" style="width: 50px;"/>
-                            <div>待审核</div>
-                        </div>
-					</template>
-				</el-table-column>
-				<el-table-column label="审核" v-if="btnAuth('qiuduipaixingbang','审核')" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<el-button v-if="scope.row.sfsh=='待审核'" size="small" @click="approvalClick(scope.row)">审核</el-button>
-					</template>
-				</el-table-column>
-				<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<el-button class="view_btn" type="info" v-if=" btnAuth('qiuduipaixingbang','查看')" @click="infoClick(scope.row.id)">
-							详情
-						</el-button>
-						<el-button class="edit_btn" type="primary" @click="editClick(scope.row.id,scope.row)" v-if=" btnAuth('qiuduipaixingbang','修改')">
-							修改						</el-button>
-						<el-button class="del_btn" type="danger" @click="delClick(scope.row.id,scope.row)"  v-if="btnAuth('qiuduipaixingbang','删除')">
-							删除						</el-button>
-						<el-button class="cross_btn" v-if="btnAuth('qiuduipaixingbang','申请加入')" type="success" @click="jiaruqiuduiCrossAddOrUpdateHandler(scope.row,'cross','是','','','')">
-							申请加入
-						</el-button>
-						<el-button class="operate_btn" v-if="btnAuth('qiuduipaixingbang','查看评论')" type="warning" @click="commentClick(scope.row.id)">
-							查看评论
-						</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -580,10 +425,161 @@
 </script>
 <style lang="scss" scoped>
 	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
-		}
+	:deep(.el-table) {
+		--el-table-border-color: transparent;
+		--el-table-border: 0;
+		background: transparent;
+	}
+	:deep(.el-table__row) {
+		background: transparent;
+	}
+	:deep(.el-table__cell) {
+		background: transparent;
+	}
+
+	.rank_index{
+		width: 44px;
+		height: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+	}
+
+	.rank_card{
+		background: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 16px;
+		padding: 16px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+	}
+	.rank_card:hover{
+		border-color: #cbd5e1;
+		box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+		transform: translateY(-1px);
+	}
+	.rank_card__header{
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.rank_card__team{
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-width: 0;
+	}
+	.rank_card__title{
+		min-width: 0;
+	}
+	.rank_card__name{
+		font-size: 16px;
+		font-weight: 700;
+		color: #0f172a;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rank_card__meta{
+		margin-top: 6px;
+		font-size: 12px;
+		color: #64748b;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rank_card__dot{
+		margin: 0 6px;
+		opacity: 0.7;
+	}
+	.rank_badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 6px 10px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 600;
+		border: 1px solid transparent;
+		white-space: nowrap;
+	}
+	.rank_badge--pass{
+		background: #ecfdf5;
+		color: #059669;
+		border-color: #a7f3d0;
+	}
+	.rank_badge--reject{
+		background: #fef2f2;
+		color: #dc2626;
+		border-color: #fecaca;
+	}
+	.rank_badge--wait{
+		background: #fffbeb;
+		color: #d97706;
+		border-color: #fde68a;
+	}
+
+	.rank_card__stats{
+		margin-top: 14px;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 10px 14px;
+	}
+	.rank_stat{
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 14px;
+		padding: 10px 12px;
+		min-width: 0;
+	}
+	.rank_stat__label{
+		font-size: 12px;
+		color: #64748b;
+		line-height: 1.2;
+	}
+	.rank_stat__value{
+		margin-top: 6px;
+		font-size: 14px;
+		font-weight: 600;
+		color: #0f172a;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rank_stat__value--primary{
+		color: #ea580c;
+	}
+
+	.rank_card__footer{
+		margin-top: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding-top: 12px;
+		border-top: 1px solid #e2e8f0;
+		flex-wrap: wrap;
+	}
+	.rank_card__extra{
+		font-size: 12px;
+		color: #64748b;
+	}
+	.rank_card__actions{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	:deep(.rank_card__actions .el-button){
+		border-radius: 12px;
 	}
 </style>
