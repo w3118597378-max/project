@@ -1,38 +1,35 @@
 <template>
     <div class="home_box">
-
-
-
-
 			<!-- 篮球赛事首页展示 -->
-            <div class="homeList_view">
-<div class="tableName"><span>篮球赛事展示</span></div>
-<div class="list">
-    <div v-for="(item,index) in lanqiusaishiHomeList" @click="detailClick('lanqiusaishi',item.id)" class="item" style="cursor: pointer;">
-      
-        <img v-if="item.imgUrls" :src="item.imgUrls[0]" alt="">
-        <div class="content">
+			<div class="homeList_view">
+				<div class="section-header">
+					<div class="section-title">
+						<span class="section-title__accent"></span>
+						<span class="section-title__text">篮球赛事展示</span>
+					</div>
+					<div class="more" @click="moreClick('lanqiusaishi')" style="cursor: pointer;"><span>查看更多</span></div>
+				</div>
 
-<div class="title">{{item.saishimingcheng}}</div>
-<div class="title">比赛时间：{{item.bisaishijian}}</div>
-
-              <div class="num-row">
-
-<div class="storeupnum">
-	<span class="iconfont icon-likeline4"></span>
-	<div class="num">{{item.storeupNumber}}</div>
-</div>
-
-
-            </div>
-        </div>
-    </div>
-</div>
-<div class="more" @click="moreClick('lanqiusaishi')" style="cursor: pointer;"><span>查看更多 ></span></div>
-            </div>
-
-
-
+				<div class="list">
+					<div v-for="(item,index) in lanqiusaishiHomeList" :key="item.id" @click="detailClick('lanqiusaishi',item.id)" class="item" style="cursor: pointer;">
+						<div class="cover">
+							<img v-if="item.imgUrls" :src="item.imgUrls[0]" alt="">
+							<div v-else class="cover__empty">暂无封面</div>
+							<div v-if="index === 0" class="badge">最新</div>
+						</div>
+						<div class="content">
+							<div class="title" :title="item.saishimingcheng">{{item.saishimingcheng}}</div>
+							<div class="meta" :title="item.bisaishijian">比赛时间：{{item.bisaishijian}}</div>
+							<div class="num-row">
+								<div class="storeupnum">
+									<span class="iconfont icon-likeline4"></span>
+									<div class="num">{{item.storeupNumber}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
     </div>
 </template>
@@ -98,219 +95,204 @@
 </script>
 
 <style lang="scss">
+
 .home_box {
-    width: 100%;
-    margin: 0 auto;
-    padding: 20px 0px 50px;
-    display: flex;
-    flex-wrap: wrap;
-    background:#FFFFFF;  
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 0 50px;
+	display: flex;
+	flex-wrap: wrap;
+	background: transparent;
 }
+
 .homeList_view {
-       width: 100%;
-    padding:10px 7%;
-    margin-top: 30px;
-    position: relative;
-    order:2;
-    background: #FFFFFF;
+	width: 100%;
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 22px 24px;
+	margin-top: 18px;
+	background: #ffffff;
+	border: 1px solid var(--slate-200);
+	border-radius: 16px;
+	box-shadow: var(--card-shadow);
 }
 
-.homeList_view .tableName span{
-    padding:0 0 6px;
- 
+.section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
 }
 
-.homeList_view .list {
-    width: 100%;
-    display: flex;
-    gap: 30px;
-    flex-wrap: wrap;
-    margin-top: 30px;
+.section-title {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 28px;
+	font-weight: 800;
+	color: var(--slate-900);
 }
 
-
-
-.homeList_view .item img {
-    width: 100%;
-    height: 242px;
-    object-fit: cover;
-    border-radius: 20px;
+.section-title__accent {
+	width: 40px;
+	height: 40px;
+	border-radius: 12px;
+	background: var(--orange-gradient);
+	box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.25);
 }
 
-.homeList_view .thumbsupnum,.homeList_view  .storeupnum,.homeList_view .clicknum {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.more {
+	padding: 10px 18px;
+	border-radius: 12px;
+	background: var(--orange-500);
+	border: 1px solid rgba(249, 115, 22, 0.25);
+	box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.15), 0 4px 6px -2px rgba(249, 115, 22, 0.08);
+	transition: all 0.2s ease;
 }
 
-.homeList_view .categoryList .item {
-    background: #f0f0f0;
-    padding: 10px 20px;
-    text-align: center;
-    min-width: 100px;
+.more span {
+	color: #fff !important;
+	font-size: 14px;
+	font-weight: 700;
 }
 
-.homeList_view .el-carousel {
-    height: 100%;
+.more:hover {
+	transform: translateY(-1px);
+	background: var(--orange-600);
 }
 
-.homeList_view .el-carousel img {
-    height: 100%;
+.list {
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 24px;
+	margin-top: 22px;
 }
 
-.homeList_view .el-carousel__container {
-    height: 100%;
+.item {
+	overflow: hidden;
+	border-radius: 14px;
+	border: 1px solid var(--slate-200);
+	background: #fff;
+	box-shadow: var(--card-shadow);
+	transition: all 0.25s ease;
 }
 
-.homeList_view .content {
-    width: 100%;
-    padding: 14px;
-    display: flex;
-    flex-wrap: wrap;
+.item:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--card-hover-shadow);
+	border-color: rgba(249, 115, 22, 0.35);
 }
 
-
-.homeList_view .price .number {
-    font-weight: 900;
-font-size: 24px;
-color: #E50D0D;
+.cover {
+	position: relative;
+	width: 100%;
+	height: 180px;
+	overflow: hidden;
+	background: var(--slate-50);
 }
 
-
-
-.homeList_view .thumbsupnum {
-background: none;
-border-radius: 0px 0px 0px 0px;
-    color:#3B432C;
-    text-align:center;
- width:auto;
-height: 30px;
-    display: flex;
-    align-items: center;
-      justify-content:center;
+.cover img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.35s ease;
 }
 
-.homeList_view .storeupnum {
-background: none;
-border-radius: 0px 0px 0px 0px;
-
-    color:#FF6F2C;
-    text-align:center;
- width:auto;
-height: 30px;
-
-    display: flex;
-    align-items: center;
-      justify-content:center;
-
+.item:hover .cover img {
+	transform: scale(1.05);
 }
 
-.homeList_view .clicknum {
-background: none;
-border-radius: 0px 0px 0px 0px;
-    color:#BBBE12;
-    text-align:center;
- width:auto;
-height: 30px;
-
-    display: flex;
-    align-items: center;
-      justify-content:center;
-
+.cover__empty {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--slate-700);
+	font-weight: 600;
 }
 
-.homeList_view .more {
-    width: auto;
-    position: absolute;
-    top:20px;
-    right:0;
-}
-.homeList_view .more span{
-    color: #b51022;
-}
-/* nf9 */
-
-.homeList_view .tableName  span {
-    position:relative;
+.badge {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	padding: 6px 12px;
+	border-radius: 999px;
+	background: rgba(249, 115, 22, 0.95);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 800;
+	box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.15), 0 4px 6px -2px rgba(249, 115, 22, 0.08);
 }
 
-
-
-.homeList_view   .more span{
-    color: var(--theme)!important;
-    font-size: 16px;
+.content {
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
-
-
-/* nf13 */
-
-
-
-
-
-
-
-
-/* nf15 */
-
-
-.homeList_view .tableName {
-   
-    height:70px;
-    line-height:70px;
-    font-size:30px;
-    font-weight:700;
-    color:#000000;
-}
-.homeList_view .more {
-    width: auto!important;
-    padding:0px 10px;
-    background:var(--theme)!important;
- 
-    position: absolute;
-    top:25px;
-    right:7%;
-  background:none;
-border-radius: 10px 10px 10px 10px;
-    text-align:center;
-    line-height:40px;
-    border:1px solid var(--theme) ;
-     box-sizing: border-box; /* 确保边框不会影响总大小 */
-}
-.homeList_view .more span{
-   color:#FFF!important;
+.title {
+	font-size: 16px;
+	font-weight: 800;
+	color: var(--slate-900);
+	line-height: 1.3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.homeList_view .num-row {
-    margin-top:20px;
-    display: flex;
-    flex-wrap: nowrap;
-    width:45%;
-    order:4;
-    gap:5px;
-    justify-content:flex-end;
-}
-.homeList_view .price {
-    width:45%;
-    text-align: right;
-font-weight: 900;
-font-size: 24px;
-color: #E50D0D;
-    line-height: 1.5;
-    margin: 20px auto 0 auto;
-    order: 5;
-    background: none;
+.meta {
+	font-size: 13px;
+	color: var(--slate-700);
+	opacity: 0.85;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.homeList_view .list .item{
-  width: calc(25% - 30px)!important;
-    border-radius: 0px;
-    overflow: hidden;
-    padding:0px;
-    padding-top:0px;
-    position:relative;
+.num-row {
+	display: flex;
+	justify-content: flex-end;
+}
 
+.storeupnum {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border-radius: 999px;
+	background: #fff7ed;
+	border: 1px solid rgba(249, 115, 22, 0.2);
+	color: var(--orange-500);
+	font-weight: 800;
+}
+
+.storeupnum .iconfont {
+	font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+	.homeList_view {
+		padding: 18px 18px;
+	}
+	.list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 768px) {
+	.section-title {
+		font-size: 22px;
+	}
+	.section-title__accent {
+		width: 36px;
+		height: 36px;
+	}
+	.list {
+		grid-template-columns: 1fr;
+	}
 }
 
 

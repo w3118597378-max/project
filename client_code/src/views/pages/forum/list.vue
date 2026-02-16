@@ -1,104 +1,196 @@
 <template>
-	<div class="forum_view">
-        <div class="breadcrumb-wrapper" style="width: 100%;">
-            <div class="bread_view">
-                <el-breadcrumb separator="" class="breadcrumb">
-                    <template v-if="centerType">
-                        <el-breadcrumb-item class="second_breadcrumb" :to="{ path: `/index/${sessionTable}Center` }">个人中心</el-breadcrumb-item>
-                        <el-breadcrumb-item class="second_breadcrumb">我的发布</el-breadcrumb-item>
-                    </template>
-                    <template v-else>
-                        <el-breadcrumb-item class="first_breadcrumb" :to="{ path: '/' }">首页</el-breadcrumb-item>
-                        <el-breadcrumb-item class="second_breadcrumb">{{formName}}</el-breadcrumb-item>
-                    </template>
-                </el-breadcrumb>
-            </div>
-            <div class="back_view" v-if="centerType">
-                <el-button class="back_btn" @click="backClick">返回</el-button>
-            </div>
-        </div>
-		<el-form :model="searchQuery" class="list_search" @submit.native.prevent>
-			<div class="search_view">
-				<div class="search_label">
-					标题：
+	<div class="min-h-screen bg-slate-50">
+		<div class="max-w-7xl mx-auto px-6 py-10">
+			<div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6 mb-6 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all duration-200">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 shadow-lg shadow-orange-500/25 flex items-center justify-center">
+						<MessageSquare class="w-6 h-6 text-white" />
+					</div>
+					<div>
+						<div class="text-2xl font-bold text-slate-900">互动交流</div>
+						<div class="text-sm text-slate-500">Forum & Community</div>
+					</div>
 				</div>
-				<div class="search_box">
-					<el-input class="search_inp" v-model="searchQuery.title" placeholder="标题" size="small" clearable>
-					</el-input>
+				<div class="flex items-center gap-3">
+					<el-button v-if="centerType" class="back_btn rounded-lg shadow-sm hover:shadow-md transition-all duration-200" @click="backClick">返回</el-button>
 				</div>
 			</div>
-			<div class="search_btn_view">
-				<el-button class="search_btn" type="primary" @click="searchClick">搜索</el-button>
-				<el-button class="add_btn" @click="addClick" v-if="!myType&&btnAuth('forum','新增')" type="success">发布新帖</el-button>
+
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+				<!-- 左侧：分类导航 -->
+				<aside class="lg:col-span-3">
+					<div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4 hover:shadow-md hover:border-orange-300 transition-all duration-200">
+						<div class="flex items-center justify-between gap-3 mb-4">
+							<div class="text-sm font-semibold text-slate-900">论坛分类</div>
+							<Tag class="w-4 h-4 text-slate-500" />
+						</div>
+
+						<button
+							type="button"
+							class="w-full mb-4 h-11 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+							:class="(!myType && btnAuth('forum','新增')) ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20 hover:bg-orange-600' : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+							@click="(!myType && btnAuth('forum','新增')) ? addClick() : null"
+						>
+							<Plus class="w-4 h-4" />
+							发布新帖
+						</button>
+
+						<div class="space-y-2">
+							<button
+								type="button"
+								class="w-full h-10 px-3 rounded-lg flex items-center gap-3 text-sm font-medium border transition-all duration-200"
+								:class="categoryIndex==-1 ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'"
+								@click="categoryClick(-1)"
+							>
+								<Layers class="w-4 h-4" />
+								<span class="flex-1 text-left">全部</span>
+							</button>
+							<button
+								type="button"
+								v-for="(item,index) in categoryList"
+								:key="index"
+								class="w-full h-10 px-3 rounded-lg flex items-center gap-3 text-sm font-medium border transition-all duration-200"
+								:class="categoryIndex==index ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'"
+								@click="categoryClick(index)"
+							>
+								<Tag class="w-4 h-4" />
+								<span class="flex-1 text-left truncate" :title="item">{{item}}</span>
+							</button>
+						</div>
+					</div>
+				</aside>
+
+				<!-- 右侧：帖子列表 -->
+				<section class="lg:col-span-9">
+					<div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6 mb-6 hover:shadow-md hover:border-orange-300 transition-all duration-200">
+						<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+							<div class="md:col-span-2">
+								<div class="text-sm font-medium text-slate-700 mb-2">标题</div>
+								<el-input
+									class="search_inp w-full"
+									v-model="searchQuery.title"
+									placeholder="请输入标题关键词"
+									clearable
+									prefix-icon="Search"
+								/>
+							</div>
+							<div class="flex justify-end gap-3">
+								<el-button class="search_btn_primary rounded-lg shadow-sm hover:shadow-md transition-all duration-200" type="primary" @click="searchClick">搜索</el-button>
+							</div>
+						</div>
+					</div>
+
+					<div class="space-y-4">
+						<div
+							class="post-card"
+							v-for="(item,index) in list"
+							:key="index"
+							@mouseenter="forumEnter(index)"
+							@mouseleave="forumLeave"
+							@click.stop="detailClick(item.id)"
+						>
+							<div class="post-card__left">
+								<div class="avatar">
+									<img
+										v-if="item.avatarurl"
+										:src="(item.avatarurl && item.avatarurl.substring(0,4)=='http') ? item.avatarurl : (baseUrl + item.avatarurl)"
+										alt=""
+									/>
+									<img v-else src="@/assets/avatar.png" alt="" />
+								</div>
+							</div>
+
+							<div class="post-card__body">
+								<div class="post-title" :title="item.title">{{item.title}}</div>
+								<div class="post-excerpt" :title="getExcerpt(item.content)">{{ getExcerpt(item.content) }}</div>
+								<div class="post-tags" v-if="item.typeName">
+									<span class="tag-pill">{{ item.typeName }}</span>
+								</div>
+								<div class="post-meta">
+									<span class="meta-item">
+										<User class="meta-icon" />
+										<span>发布人：{{item.isAnonymous==1&&item.userid!=userid?'匿名':item.username}}</span>
+									</span>
+									<span class="meta-item">
+										<Clock class="meta-icon" />
+										<span>{{item.addtime}}</span>
+									</span>
+								</div>
+							</div>
+
+							<div class="post-card__right">
+								<div class="thumb" v-if="item.imgUrls && item.imgUrls.length">
+									<img :src="item.imgUrls[0]" alt="" />
+								</div>
+								<div class="post-actions" v-if="item.userid==userid&&forumShowIndex==index&&(btnAuth('forum','修改')||btnAuth('forum','删除'))">
+									<template v-if="centerType && item.isDel>0">
+										<el-button class="forum_del_btn" type="danger" @click.stop="showDialog(item)">内容违规-已删除</el-button>
+									</template>
+									<template v-else>
+										<el-button class="forum_edit_btn" v-if="btnAuth('forum','修改')" type="primary" @click.stop="editClick(item.id)">修改</el-button>
+										<el-button class="forum_del_btn" v-if="btnAuth('forum','删除')" type="danger" @click.stop="delClick(item.id)">删除</el-button>
+									</template>
+								</div>
+								<div class="post-time" v-else>{{item.addtime}}</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="pagination-container bg-white border border-slate-200 rounded-lg shadow-sm p-4 mt-6 flex justify-center hover:shadow-md hover:border-orange-300 transition-all duration-200">
+						<el-pagination
+							background
+							:layout="layouts.join(',')"
+							:total="total"
+							:page-size="listQuery.limit"
+							v-model:current-page="listQuery.page"
+							prev-text="上一页"
+							next-text="下一页"
+							:hide-on-single-page="false"
+							@size-change="sizeChange"
+							@current-change="currentChange" />
+					</div>
+				</section>
 			</div>
-		</el-form>
-        <div class="category_view">
-            <div class="category" :class="categoryIndex==-1?'categoryActive':''" @click="categoryClick(-1)">全部
-            </div>
-            <div class="category" :class="categoryIndex==index?'categoryActive':''"
-                 v-for="(item,index) in categoryList" :key="index" @click="categoryClick(index)">{{item}}</div>
-        </div>
-		<div class="forum_list">
-			<div class="forum_item" v-for="(item,index) in list" :key="index" @mouseenter="forumEnter(index)"
-				@mouseleave="forumLeave" @click.stop="detailClick(item.id)">
-				<div class="forum_item_left">
-                    <el-image class="forum_item_img" :src="item.imgUrls?item.imgUrls[0]:''"></el-image>
-					<span class="forum_item_title">{{item.title}}</span>
-					<span class="forum_item_name">
-                        (发布人：{{item.isAnonymous==1&&item.userid!=userid?'匿名':item.username}})
-                    </span>
-				</div>
-				<div class="forum_item_btn_box" v-if="item.userid==userid&&forumShowIndex==index&&(btnAuth('forum','修改')||btnAuth('forum','删除'))">
-                    <template v-if="centerType && item.isDel>0">
-                        <el-button class="forum_del_btn" type="danger" @click.stop="showDialog(item)">内容违规-已删除</el-button>
-                    </template>
-                    <template v-else>
-                        <el-button class="forum_edit_btn" v-if="btnAuth('forum','修改')" type="primary" @click.stop="editClick(item.id)">修改</el-button>
-                        <el-button class="forum_del_btn" v-if="btnAuth('forum','删除')" type="danger" @click.stop="delClick(item.id)">删除</el-button>
-                    </template>
-				</div>
-				<div class="forum_time" v-else>{{item.addtime}}</div>
-			</div>
-			<el-pagination
-				background 
-				:layout="layouts.join(',')"
-				:total="total" 
-				:page-size="listQuery.limit"
-                v-model:current-page="listQuery.page"
-				prev-text="上一页"
-				next-text="下一页"
-				:hide-on-single-page="false"
-				@size-change="sizeChange"
-				@current-change="currentChange" />
+
+			<button
+				type="button"
+				v-if="!myType&&btnAuth('forum','新增')"
+				class="fab"
+				@click="addClick"
+				aria-label="发布新帖"
+			>
+				<Plus class="fab-icon" />
+			</button>
 		</div>
 	</div>
-    <el-dialog
-        title="处理结果"
-        v-model="reportDialog.visible"
-        width="50%">
-        <el-form>
-            <el-form-item label="举报原因" label-width="80px">
-                {{reportDialog.data.reason}}
-            </el-form-item>
-            <el-form-item label="补充截图" label-width="80px">
-                <uploads
-                    action="file/upload"
-                    tip="请上传封面"
-                    style="width: 100%;text-align: left;"
-                    disabled
-                    :fileUrls="reportDialog.data.images?reportDialog.data.images:''">
-                </uploads>
-            </el-form-item>
-            <el-form-item label="处理建议" label-width="80px">
-                {{reportDialog.data.suggestion}}
-            </el-form-item>
-        </el-form>
-        <div slot="footer" style="text-align: center">
-            <el-button type="primary" @click="reportDialog.visible = false">关 闭</el-button>
-        </div>
-    </el-dialog>
 
-    <forumAdd ref="forumAddRef" @close="getList()"></forumAdd>
+	<el-dialog
+		title="处理结果"
+		v-model="reportDialog.visible"
+		width="50%">
+		<el-form>
+			<el-form-item label="举报原因" label-width="80px">
+				{{reportDialog.data.reason}}
+			</el-form-item>
+			<el-form-item label="补充截图" label-width="80px">
+				<uploads
+					action="file/upload"
+					tip="请上传封面"
+					style="width: 100%;text-align: left;"
+					disabled
+					:fileUrls="reportDialog.data.images?reportDialog.data.images:''">
+				</uploads>
+			</el-form-item>
+			<el-form-item label="处理建议" label-width="80px">
+				{{reportDialog.data.suggestion}}
+			</el-form-item>
+		</el-form>
+		<div slot="footer" style="text-align: center">
+			<el-button type="primary" @click="reportDialog.visible = false">关 闭</el-button>
+		</div>
+	</el-dialog>
+
+	<forumAdd ref="forumAddRef" @close="getList()"></forumAdd>
 </template>
 
 <script setup>
@@ -107,6 +199,7 @@
 		nextTick,
 		getCurrentInstance
 	} from 'vue';
+
 	import {
 		useRoute,
 		useRouter
@@ -117,6 +210,8 @@
 	const formName = '互动交流'
 	const router = useRouter()
 	const route = useRoute()
+	import { MessageSquare, Tag, Layers, Plus, User, Clock } from 'lucide-vue-next'
+
     const baseUrl = ref(context.$config.url)
     const sessionTable = localStorage.getItem('frontSessionTable')
     //判断是否调我的发布列表
@@ -289,636 +384,172 @@
         })
     }
 	init()
+
+	const getExcerpt = (html) => {
+		if (!html) return ''
+		const text = String(html)
+			.replace(/<[^>]*>/g, ' ')
+			.replace(/&nbsp;/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim()
+		if (!text) return ''
+		return text.length > 60 ? `${text.slice(0, 60)}...` : text
+	}
 </script>
 
-<style lang="scss">
-.category_view{
-    width: 100%;
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    padding: 10px 0;
-}
-.category{
-    cursor: pointer;
-    padding: 10px 10px;
-    border-radius: 6px;
-}
-.category.categoryActive{
-    background: var(--theme);
-    color: #fff;
-}
-.forum_item_img{
-    width: 60px;
-    height: 60px;
-    margin-right: 10px;
-}
-/*总盒子*/
-.forum_view {
-    width: 100%;
-    padding: 0 7% 50px;
-    margin: 0 auto;
-    position: relative;
-    background: #FFFFFF;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    align-content: flex-start;
-    justify-content: space-between;
-    
-}
+<style lang="scss" scoped>
+	.search_inp {
+		:deep(.el-input__wrapper) {
+			background: #fff;
+			border: 1px solid var(--slate-200);
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+			border-radius: 12px;
+			transition: all 0.2s ease;
+		}
+		:deep(.el-input__wrapper.is-focus) {
+			box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+			border-color: rgba(249, 115, 22, 0.35);
+		}
+	}
 
-.forum_view .section_title {
-    width: 100%;
-}
-.forum_view .section_title{
-    background-size: 100% 100%;
-    color: #3B432C;
-    font-size: 26px;
-    line-height: 44px;
-    text-align: left;
-    font-weight: 500;
-}
+	.search_btn_primary {
+		:deep(.el-button) {
+			background: var(--orange-500);
+			border-color: var(--orange-500);
+			color: #fff;
+			font-weight: 700;
+			padding: 10px 18px;
+			border-radius: 12px;
+			box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.15), 0 4px 6px -2px rgba(249, 115, 22, 0.08);
+		}
+		:deep(.el-button:hover) {
+			background: var(--orange-600);
+			border-color: var(--orange-600);
+		}
+	}
 
-.forum_view .title{
-    color: rgb(51, 51, 51);
-    height:50px;
-    line-height:50px;
-    font-size:22px;
-    padding-left: 50px;
-    position: relative;
-}
+	.post-card {
+		display: grid;
+		grid-template-columns: 56px 1fr;
+		gap: 16px;
+		padding: 18px;
+		background: #fff;
+		border: 1px solid var(--slate-200);
+		border-radius: 16px;
+		box-shadow: var(--card-shadow);
+		transition: all 0.25s ease;
+		cursor: pointer;
+	}
 
-/*搜索盒子*/
-.forum_view .list_search{
-    width: 100%;
-    display:flex;
-    align-items:center;
-    justify-content: flex-end;
-    margin: 20px 0 10px 0;
-}
-.forum_view .list_search .search_view{
-    display:flex;
-    align-items:center;
-}
-.forum_view .list_search .search_view .search_label{
-    font-size:16px;
-    white-space: nowrap;
-}
-.forum_view .list_search .search_view .search_box{
-}
-.forum_view .list_search .search_view .search_box .el-input__wrapper{
-    box-shadow:none;
-    padding: 0;
-}
-.forum_view .list_search .search_view .search_box .search_inp{
-    padding:0 10px;
-    border:1px solid #ddd;
-    font-size:16px;
-    background: #fff;
-    height:38px;
-}
-.forum_view .list_search .search_btn_view .search_btn{
-    background: #3B432C;
-    color: rgb(255, 255, 255);
-    border:0;
-    border-radius:0;
-    height:38px;
-}
-.forum_view .list_search .search_btn_view .search_btn:hover{
-    background: #3B432C;
-}
-.forum_view .list_search .search_btn_view .add_btn{
-    background: #f49843;
-    color: rgb(255, 255, 255);
-    border:0;
-    border-radius:0;
-    height:38px;
-}
-.forum_view .list_search .search_btn_view .add_btn:hover{
-    background: #000;
-}
+	@media (min-width: 768px) {
+		.post-card {
+			grid-template-columns: 56px 1fr 160px;
+			align-items: start;
+		}
+	}
 
-/* 分类 */
-.forum_view .category_view {
-    width: 200px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 20px 0;
-    margin: 0 30px 0 0;
-    border-radius: 0 0 8px 8px;
-    box-shadow:0px 2px 4px -3px #ddd;
-}
+	.post-card:hover {
+		transform: translateY(-4px);
+		box-shadow: var(--card-hover-shadow);
+		border-color: rgba(249, 115, 22, 0.35);
+	}
 
-.forum_view .category {
-    width: 100%;
-    background: #fff;
-    padding: 15px 10px;
-    text-align: center;
-    cursor:pointer;
-    border-radius: 30px;
-    border: 1px solid #ddd;
-    margin: 0;
-    font-size: 16px;
-}
+	.avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 14px;
+		overflow: hidden;
+		background: var(--slate-50);
+		border: 1px solid var(--slate-200);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
 
-.forum_view .category.categoryActive,.forum_view .category:hover {
-    color: #fff;
-    background: #3B432C;
-}
+	.avatar img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
 
-/*列表盒子*/
-.forum_view .forum_list{
-    width: 100%;
-    margin: 20px auto;
-    padding: 0px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content:space-between;
-    flex:1;
-}
-/*item*/
-.forum_view .forum_list .forum_item{
-    width: calc(50% - 10px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 30px;
-    cursor: pointer;
-    color: rgba(54, 49, 53, 1);
-    height: auto;
-    border-width: 0px 0px 0px;
-    border-style: solid;
-    border-color: rgb(238, 238, 238);
-    border-image: initial;
-    font-size: 16px;
-    margin-bottom: 20px;
-    background: #fff;
-    border: 0px dashed #ddd;
-    border-radius: 12px;
-}
-.forum_view .forum_list .forum_item:last-child{
-}
-.forum_view .forum_list .forum_item:hover{
-    color: #3B432C;
-}
-/*左边内容盒子*/
-.forum_view .forum_list .forum_item .forum_item_left{
-    display: flex;
-    align-items: center;
-}
-.forum_view .forum_list .forum_item .forum_item_left .el-image{
-    width: auto;
-    height: auto;
-    margin-right: 10px;
-}
-.forum_view .forum_list .forum_item .forum_item_left .el-image img{
-    width: 110px;
-    height: 110px;
-    object-fit: cover;
-}
+	.post-title {
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--slate-900);
+		line-height: 1.35;
+		margin-bottom: 8px;
+	}
 
-/*标题*/
-.forum_view .forum_list .forum_item .forum_item_left .forum_item_title{
-    font-size: 16px;
-    /* color: #3B432C; */
-    font-weight: 600;
-}
-/*发布人*/
-.forum_view .forum_list .forum_item .forum_item_left .forum_item_name{
-    color: rgb(153, 153, 153);
-}
-/*时间*/
-.forum_view .forum_list .forum_item .forum_time{
-    font-size: 15px;
-    color: #000;
-    padding: 10px;
-    background: none;
-}
-/*按钮盒子*/
-.forum_view .forum_list .forum_item .forum_item_btn_box{
-    width:auto;
-}
-/*修改*/
-.forum_view .forum_list .forum_item .forum_item_btn_box .forum_edit_btn{
-    margin: 0px 10px 0px 0px;
-    padding: 0px 24px;
-    width: auto;
-    height: 40px;
-    font-size: 14px;
-    color: rgb(255, 255, 255);
-    border-radius: 4px;
-    border: 0px;
-    background: #3B432C;
-    cursor: pointer;
-}
-/*删除*/
-.forum_view .forum_list .forum_item .forum_item_btn_box .forum_del_btn{
-    margin: 0px 10px 0px 0px;
-    padding: 0px 24px;
-    width: auto;
-    height: 40px;
-    font-size: 14px;
-    color: rgb(255, 255, 255);
-    border-radius: 4px;
-    border: 0px;
-    background: rgba(254, 66, 66, 0.8);
-    cursor: pointer;
-}
+	.post-excerpt {
+		font-size: 14px;
+		color: var(--slate-700);
+		opacity: 0.9;
+		line-height: 1.6;
+		margin-bottom: 10px;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
 
+	.post-tags {
+		margin-bottom: 10px;
+	}
 
-/* 轮播 */
-.forum_view .el-carousel{
-    width: 50%;
-    margin: 0 auto;
-    order:-1;
-}
-.forum_view .el-carousel .el-carousel__container{
-    position: relative;  
-    height: 300px;
-}
-.forum_view .el-carousel .el-carousel__container .el-carousel__item{
-    
-}
-.forum_view .el-carousel .el-carousel__container .el-carousel__item img{
-    width: 100%;
-    height: 100%;
-    object-fit: contain !important;
-}
+	.tag-pill {
+		display: inline-flex;
+		align-items: center;
+		padding: 4px 10px;
+		border-radius: 999px;
+		font-size: 12px;
+		font-weight: 700;
+		background: #fff7ed;
+		border: 1px solid rgba(249, 115, 22, 0.2);
+		color: var(--orange-600);
+	}
 
+	.post-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 14px;
+		font-size: 12px;
+		color: var(--slate-700);
+		opacity: 0.9;
+	}
 
-/*info盒子*/
-.forum_view .forum_detail .forum_info{
-    width: 95%;
-    text-align: center;
-    color: #000000;
-    font-size: 16px;
-    margin:  0px auto;
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 20px;
-    border-bottom: 1px solid #3B432C;
-}
-/*发布人*/
-.forum_view .forum_detail .forum_info .forum_name{
-    margin: 0px 10px 0px 0px;
-}
-/*时间*/
-.forum_view .forum_detail .forum_info .forum_time{
-    margin: 0px 10px 0px 0px;
-}
-/*分割线*/
-.forum_view .forum_detail .el-divider--horizontal{
-    display: block;
-    height: 0px;
-    width: 100%;
-    margin: 24px 0;
-}
+	.meta-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		white-space: nowrap;
+	}
 
-/*赞踩*/
-.forum_view .thumbs_view{
-    width: 100%;
-    background:none;
-}
-.forum_view .thumbs_view .zan_view{
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 30px;
-}
-.forum_view .thumbs_view .iconfont{
-    margin-right: 5px;
-}
-.forum_view .thumbs_view .can_view{
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 30px;
-}
+	.meta-icon {
+		width: 14px;
+		height: 14px;
+		color: var(--orange-500);
+	}
 
-/*收藏*/
-.forum_view .collect_view{
-    width: 100%;
-    padding:0 20px;
-    background:none;
-}
-.forum_view .collect_view .iconfont{
-    margin-right: 5px;
-}
+	.post-card__right {
+		display: none;
+	}
 
+	@media (min-width: 768px) {
+		.post-card__right {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 10px;
+		}
+	}
 
-/*内容区*/
-.forum_view .forum_detail .forum_content{
-    width: 100%;
-    text-align: left;
-    font-size: 16px;
-    color: #000000;
-    /* text-indent: 2rem; */
-    padding: 0 50px;
-    background:none;
-}
-
-/*一级评论 盒子*/
-.forum_view .forum_comment_box{
-    margin: 0px 0px 0px;
-    width: 100%;
-    padding: 0 0 20px 0;
-    border: 0px solid rgb(238, 238, 238);
-    box-shadow: none;
-    border-radius: 0px;
-}
-.forum_view .forum_comment_box .el-card__body{
-    padding: 0px;
-}
-/*列表盒子*/
-.forum_view .forum_comment_box .forum_comment_list{
-    width: 100%;
-    text-align: left;
-    padding: 20px;
-}
-/*item*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment{
-    width: 100%;
-    padding: 0px;
-    border: 0px solid rgb(238, 238, 238);
-    margin: 0px 0px 20px;
-    background:none;
-}
-/*用户盒子*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_user{
-    display: flex;
-    align-items: center;
-    background: #3B432C;
-    padding: 5px 10px;
-}
-/*头像*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_user .forum_comment_user_avatar{
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin: 0px 10px 0px 0px;
-}
-/*用户名*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_user .forum_comment_username{
-    font-size: 16px;
-    color: #000;
-}
-/*内容*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_content{
-    width: 100%;
-    padding: 20px 30px 0px 30px;
-    font-size: 16px;
-}
-/*按钮盒子*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_reply_view{
-    width: 100%;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0px 20px 0px 0px;
-    box-sizing: border-box;
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_reply_view .forum_comment_del{
-    font-size: inherit;
-    color: #FFFFFF;
-    cursor: pointer;
-    margin: 0px 0px 0px 10px;
-    background: #000000;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_reply_view .forum_comment_reply{
-    font-size: inherit;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    margin: 0px 0px 0px 10px;
-    background: #3B432C;
-    padding: 5px 10px;
-        border-radius: 5px;
-}
-
-/*二级评论 盒子*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list{
-    width:100%;
-    padding:10px;
-    background:#F4F4F4;
-    border-radius: 10px 10px 10px 10px;
-border: 1px solid #3B432C;
-    margin-top: 10px;
-}
-/*线*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second_divider{
-    display: block;
-    height: 1px;
-    width: 100%;
-    margin: 24px 0;
-    
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second_divider .el-divider__text{
-    font-size: 16px;
-}
-/*item*/
-
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second:last-child{
-    border-width: 0px 0px 0px;
-}
-
-/*用户盒子*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_user{
-    display: flex;
-    align-items: center;
-}
-/*头像*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_user .forum_comment_second_user_avatar{
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin: 0px 10px 0px 0px;
-}
-/*用户名*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_user .forum_comment_second_username{
-    font-size: 16px;
-}
-/*内容*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_content{
-    width: calc(100% - 60px);
-    margin: 0px 0px 0px 60px;
-    padding: 20px 0px 0px;
-    color:#999;
-    font-size: 16px;
-}
-/*按钮盒子*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_reply_view{
-    width: 100%;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0px 20px 0px 0px;
-    box-sizing: border-box;
-}
-/*删除*/
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second .forum_comment_second_reply_view .forum_comment_second_del{
-    font-size: inherit;
-    color: #FFFFFF;
-    cursor: pointer;
-    margin: 0px 0px 0px 10px;
-    background: #000000;
-    padding: 5px 10px;
-    border-radius:5px;
-}
-
-
-.forum_view .title:before {
-    position: absolute;
-    content: '';
-    width: 40px;
-    height: 40px;
-    top: -10px;
-    left: 0;
-    background: url(http://clfile.zggen.cn/20241205/28785da1592b4ff2b775a168e4b4bb3c.png);
-    background-size: 100% 100%;
-}
-
-
-
-.forum_view .comment_add_box {
-    display: flex;
-    padding: 10px;
-    background: #3B432C;
-border-radius: 10px 10px 0px 0px;
-    height: 100px;  
-    line-height:100px;
-    align-items: center;
-    justify-content: center;
-}
-
-.forum_view .comment_divider.el-divider.el-divider--horizontal {
-    background: #3B432C!important;
-}
-
-.forum_view .el-divider__text {
-    color: #3B432C;
-    border: 1px solid rgba(66, 66, 66, 1);
-}
-
-.forum_view button.el-button.comment_add {
-    background: #FF6F2C;
-    color: #fff;
-    border: none;
-}
-
-/* nf9详情结构 */
-/* 轮播图 */
-.forum_view .el-carousel.el-carousel--horizontal.forum_swiper {
-    display:none;
-}
-
-.forum_view .forum_detail .forum_info{
-    order:-1;
-   padding-bottom:30px; 
-   background:none;
-    
-}
-.forum_view .forum_detail .forum_title{
-    order:-2;
- 
-  
-}
-.forum_view .forum_detail .forum_content{
-    order:2;
-    padding-bottom:100px;
-}
-.forum_view .forum_detail .el-divider--horizontal{
-    display:none;
-}
-.forum_view .forum_detail .forum_content{
-    order:3;
-}
-.forum_view .thumbs_view{
-    order:4
-}
-.forum_view .collect_view{
-    order:5
-}
-
-.forum_view .operate-row {
-    order:6;
-    background:none;
-    border-radius:0px 0px 50px 0px;
-}
-/* 评论列表分割 */
-.forum_view .el-divider.el-divider--horizontal.comment_divider {
-    display:none;
-}
-
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second_divider{
-    display:none;
-}
-
-
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_user{
-background: none;
-border-radius: 20px 20px 0px 0px;
-    border: 1px solid #3B432C;
-    border-bottom:0px;
-padding-top:20px;
-padding-left:20px;
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_content{
-   background: none;
-border-radius: 0px 0px 0px 0px;
-border:1px solid #3B432C;
-border-bottom:0px;
-    border-top:0px; 
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_reply_view{
-   background: none;
-border-radius: 0px 0px 20px 20px;
-   padding-bottom:20px;
-    border:1px solid #3B432C;
-    border-top:0px;
-}
-.forum_view .forum_comment_box .forum_comment_list .forum_comment .forum_comment_second_list .forum_comment_second{
-background: none;
-border-radius: 0px 0px 0px 0px;
-   margin-bottom:20px;
-   padding:20px;
-    border-bottom: 1px solid #A8A8A8;
-}
-/* nf20 */
-/*详情盒子*/
-.forum_view .forum_detail{
-    width: 100%;
-    margin: 20px 0px 0;
-    padding: 0px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    align-content: flex-start;
-    background:#FFF7E8;
-border-radius:20px;
-
-}
-
-/*标题*/
-.forum_view .forum_detail .forum_title{
-    width: 100%;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    color: #000000;
-    margin-top: 20px;
-    padding:10px;
-}
-
-
-.forum_view .el-card.is-always-shadow.forum_comment_box {
-  background: #FFFFFF;
-
-border-radius: 20px;
-   margin-top:50px; 
-    border: 2px solid #3B432C;
-}
+	.thumb {
+		width: 160px;
+		height: 90px;
+		border-radius: 14px;
+		overflow: hidden;
+		background: var(--slate-50);
+		border: 1px solid var(--slate-200);
+	}
 
 </style>

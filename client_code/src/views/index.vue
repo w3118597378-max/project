@@ -4,84 +4,86 @@
 		<div class="orange-top-bar"></div>
 		
         <div class="index_top">
-            <div class="modern-header">
-                <!-- 左侧：图标+项目名称 -->
-                <div class="header-left">
-                    <div class="icon-container">
-                        <i class="iconfont icon-trophy"></i>
+            <div class="top-nav">
+                <div class="modern-header">
+                    <!-- 左侧：图标+项目名称 -->
+                    <div class="header-left">
+                        <div class="icon-container">
+                            <i class="iconfont icon-trophy"></i>
+                        </div>
+                        <div class="project-info">
+                            <h1 class="project-name">{{projectName}}</h1>
+                            <p class="project-subtitle">比赛管理系统</p>
+                        </div>
                     </div>
-                    <div class="project-info">
-                        <h1 class="project-name">{{projectName}}</h1>
-                        <p class="project-subtitle">比赛管理系统</p>
-                    </div>
-                </div>
 
-                <!-- 右侧：登录/用户信息 -->
-                <div class="header-right">
-                    <button v-if="!Token" class="login-modern" @click="loginClick">
-                        <el-icon><User/></el-icon>登录
-                    </button>
+                    <!-- 右侧：登录/用户信息 -->
+                    <div class="header-right">
+                        <button v-if="!Token" class="login-modern" @click="loginClick">
+                            <el-icon><User/></el-icon>登录
+                        </button>
 
-                    <div class="user" v-if="Token">
-                        <el-dropdown class="avatar-container" trigger="hover">
-                            <div class="avatar-wrapper">
-                                <img class="user-avatar" :src="store.getters['user/avatar']" style="width: 50px">
-                                <div class="nickname">{{store.getters['user/username']}}</div>
-                                <el-icon class="el-icon-arrow-down">
-                                    <arrow-down />
-                                </el-icon>
-                            </div>
-                            <template #dropdown>
-                                <el-dropdown-menu class="user-dropDown" slot="dropdown">
-                                    <el-dropdown-item @click="menuHandler('center')" class="center">
-                                        <span>个人中心</span>
-                                    </el-dropdown-item>
-                                    <el-dropdown-item @click="loginOut" class="loginOut">
-                                        <span>退出登录</span>
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                    </div>
-                </div>
-            </div>
-                <div class="menu-wrapper">
-                    <el-scrollbar wrap-class="scrollbar-wrapper" class="menu_scrollbar">
-                        <el-menu :unique-opened="true" :default-active="menuIndex"
-                             class="menu_view" mode="horizontal" @select="menuChange"
-                             :key="menuIndex"  :ellipsis="false">
-                            <el-menu-item class="first-item" index="/index/home" @click="menuHandler('/')">
-                                <i class="iconfont icon-zhuye2"></i>
-                                <template #title>
-                                    <span>首页</span>
+                        <div class="user" v-if="Token">
+                            <el-dropdown class="avatar-container" trigger="hover">
+                                <div class="avatar-wrapper">
+                                    <img class="user-avatar" :src="store.getters['user/avatar']" style="width: 50px">
+                                    <div class="nickname">{{store.getters['user/username']}}</div>
+                                    <el-icon class="el-icon-arrow-down">
+                                        <arrow-down />
+                                    </el-icon>
+                                </div>
+                                <template #dropdown>
+                                    <el-dropdown-menu class="user-dropDown" slot="dropdown">
+                                        <el-dropdown-item @click="menuHandler('center')" class="center">
+                                            <span>个人中心</span>
+                                        </el-dropdown-item>
+                                        <el-dropdown-item @click="loginOut" class="loginOut">
+                                            <span>退出登录</span>
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
                                 </template>
-                            </el-menu-item>
-                            <template v-for="(menu,index) in menuList" :key="menu.menu">
-                                <el-sub-menu v-if="menu.child.length>1" :index="menu.name" class="first-item" :teleported="true">
+                            </el-dropdown>
+                        </div>
+                    </div>
+                </div>
+                    <div class="menu-wrapper">
+                        <el-scrollbar wrap-class="scrollbar-wrapper" class="menu_scrollbar">
+                            <el-menu :unique-opened="true" :default-active="menuIndex"
+                                 class="menu_view" mode="horizontal" @select="menuChange"
+                                 :key="menuIndex"  :ellipsis="false">
+                                <el-menu-item class="first-item" index="/index/home" @click="menuHandler('/')">
+                                    <i class="iconfont icon-zhuye2"></i>
                                     <template #title>
-                                        <i class="iconfont" :class="menu.icon"></i>
-                                        <span>{{ menu.name }}</span>
-                                    </template>
-                                    <el-menu-item class="second-item" v-for=" (child,index1) in menu.child" :key="index1"
-                                                  :index="child.url" @click="menuHandler(child.url)">{{ child.name }}
-                                    </el-menu-item>
-                                </el-sub-menu>
-                                <el-menu-item v-else :index="menu.child[0].url" class="first-item" @click="menuHandler(menu.child[0].url)">
-                                    <i class="iconfont" :class="menu.icon"></i>
-                                    <template #title>
-                                        <span>{{menu.child[0].name}}</span>
+                                        <span>首页</span>
                                     </template>
                                 </el-menu-item>
-                            </template>
-                            <el-menu-item v-if="Token" :index="`/index/${context.$toolUtil.storageGet('frontSessionTable')}Center`" class="first-item" @click="menuHandler('center')">
-                                <i class="iconfont icon-user1"></i>
-                                <template #title>
-                                    <span>个人中心</span>
+                                <template v-for="(menu,index) in menuList" :key="menu.menu">
+                                    <el-sub-menu v-if="menu.child.length>1" :index="menu.name" class="first-item" :teleported="true">
+                                        <template #title>
+                                            <i class="iconfont" :class="menu.icon"></i>
+                                            <span>{{ menu.name }}</span>
+                                        </template>
+                                        <el-menu-item class="second-item" v-for=" (child,index1) in menu.child" :key="index1"
+                                                      :index="child.url" @click="menuHandler(child.url)">{{ child.name }}
+                                        </el-menu-item>
+                                    </el-sub-menu>
+                                    <el-menu-item v-else :index="menu.child[0].url" class="first-item" @click="menuHandler(menu.child[0].url)">
+                                        <i class="iconfont" :class="menu.icon"></i>
+                                        <template #title>
+                                            <span>{{menu.child[0].name}}</span>
+                                        </template>
+                                    </el-menu-item>
                                 </template>
-                            </el-menu-item>
-                        </el-menu>
-                    </el-scrollbar>
-                </div>
+                                <el-menu-item v-if="Token" :index="`/index/${context.$toolUtil.storageGet('frontSessionTable')}Center`" class="first-item" @click="menuHandler('center')">
+                                    <i class="iconfont icon-user1"></i>
+                                    <template #title>
+                                        <span>个人中心</span>
+                                    </template>
+                                </el-menu-item>
+                            </el-menu>
+                        </el-scrollbar>
+                    </div>
+            </div>
 
                 <div class="rotation_view">
                     <mySwiper :type="3" :data="rotationList" :autoHeight="false" :autoplay="true"
@@ -102,7 +104,26 @@
 			<router-view :key="routerKey"/>
 			<el-backtop :right="100" :bottom="100" />
 			<div class="bottom_view ql-snow ql-editor">
-                
+				<div class="front-footer">
+					<div class="front-footer__container">
+						<div class="front-footer__content">
+							<div class="front-footer__section">
+								<div class="front-footer__title">关于我们</div>
+								<div class="front-footer__text">高校三人篮球联赛管理系统</div>
+							</div>
+							<div class="front-footer__section">
+								<div class="front-footer__title">快速链接</div>
+								<a href="#" class="front-footer__link">赛事规则</a>
+								<a href="#" class="front-footer__link">联系我们</a>
+							</div>
+							<div class="front-footer__section">
+								<div class="front-footer__title">关注我们</div>
+								<div class="front-footer__text">欢迎关注最新赛事动态</div>
+							</div>
+						</div>
+						<div class="front-footer__bottom">&copy; 2024 高校三人篮球联赛. All rights reserved.</div>
+					</div>
+				</div>
 			</div>
 		</el-scrollbar>
 	</template>
