@@ -1,120 +1,152 @@
 <template>
-	<div class="center_view">
-		<div class="section_title">
-			<span>{{formName}}</span>
-		</div>
-		<div class="usersView">
-			<div class="usersTabView">
-				<div class="usersTab" :class="tabIndex=='center'?'usersTabActive':''" @click="tabClick({tableName:'center'})">个人中心</div>
-				<div class="usersTab " :class="tabIndex=='updatePassword'?'usersTabActive':''" @click="tabClick({tableName:'updatePassword'})">修改密码</div>
-				<template v-for="(item,index) in menuList">
-					<div v-if="item.child.length>1" class="usersTab" @mouseenter="usersTabHover(index)"
-						 @mouseleave="usersTabLeave">
-						{{item.menu}}
-						<el-collapse-transition>
-							<div class="usersTabHoverView" v-if="usersTabIndex==index">
-								<div class="usersTabHoverTab" v-for="(items,indexs) in item.child" @click="tabClick(items)">
-									{{items.menu}}
-                                </div>
-							</div>
-						</el-collapse-transition>
+	<div class="min-h-screen bg-slate-50">
+		<div class="max-w-7xl mx-auto px-6 py-10">
+			<div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6 mb-6 flex items-center justify-between hover:shadow-md hover:border-orange-300 transition-all duration-200">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 shadow-lg shadow-orange-500/25 flex items-center justify-center">
+						<User class="w-6 h-6 text-white" />
 					</div>
-					<div v-else-if="hasBack(item.child[0]) " class="usersTab" @click="tabClick(item.child[0])">
-						{{item.child[0].menu}}
+					<div>
+						<div class="text-2xl font-bold text-slate-900">{{formName}}</div>
+						<div class="text-sm text-slate-500">Personal Center</div>
 					</div>
-				</template>
-                <div class="usersTab" v-if="btnAuth('storeup','查看')" @click="tabClick({tableName:'storeup',type:1})">我的收藏</div>
+				</div>
 			</div>
-			<div class="usersBox updateInfo" v-if="tabIndex=='center'">
-				<el-form class="usersForm" ref="userFormRef" :model="userForm" label-width="120px" :rules="rules">
-					<el-row>
-						<el-col :span="12">
-							<el-form-item prop="duizhangzhanghao" label="队长账号">
-								<el-input class="list_inp" v-model="userForm.duizhangzhanghao" placeholder="队长账号" readonly></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item prop="duizhangxingming" label="队长姓名">
-								<el-input class="list_inp" v-model="userForm.duizhangxingming" placeholder="队长姓名" ></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="24">
-							<el-form-item prop="zhaopian" label="照片">
-								<uploads
-									action="file/upload" 
-									tip="请上传照片"
-									style="width: 100%;text-align: left;"
-									:fileUrls="userForm.zhaopian?userForm.zhaopian:''" 
-									@change="zhaopianUploadSuccess">
-								</uploads>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label="性别" prop="xingbie">
-								<el-select
-									class="list_sel"
-									v-model="userForm.xingbie" 
-									placeholder="请选择性别"
-									style="width:100%;"
-									>
-									<el-option v-for="(item,index) in xingbieLists" :label="item" :value="item">
-									</el-option>
-								</el-select>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item prop="dianhua" label="电话">
-								<el-input class="list_inp" v-model="userForm.dianhua" placeholder="电话" ></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label="球队名称" prop="qiuduimingcheng">
-								<el-select
-									disabled
-									class="list_sel"
-									v-model="userForm.qiuduimingcheng" 
-									placeholder="请选择球队名称"
-									style="width:100%;"
-									>
-									<el-option v-for="(item,index) in qiuduimingchengLists" :label="item" :value="item">
-									</el-option>
-								</el-select>
-							</el-form-item>
-						</el-col>
-					</el-row>
-					<div class="formModel_btn_box">
-						<el-button class="formModel_confirm" @click="updateSession">更新信息</el-button>
-						<el-button class="formModel_cancel" @click="loginout" type="danger">退出登录</el-button>
-					</div>
-				</el-form>
-			</div>
-			<div class="usersBox updatePassword" v-if="tabIndex=='updatePassword'">
-				<el-form class="usersForm" ref="passwordFormRef" :model="passwordForm" label-width="120px"
-					:rules="passwordRules">
-					<el-row>
-						<el-col :span="12">
-							<el-form-item label="原密码" prop="mima">
-								<el-input class="list_inp" v-model="passwordForm.mima" placeholder="原密码"
-									type="password"></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label="新密码" prop="newmima">
-								<el-input class="list_inp" v-model="passwordForm.newmima" placeholder="新密码"
-									type="password"></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label="确认密码" prop="newmima2">
-								<el-input class="list_inp" v-model="passwordForm.newmima2" placeholder="确认密码"
-									type="password"></el-input>
-							</el-form-item>
-						</el-col>
-					</el-row>
-					<div class="formModel_btn_box">
-						<el-button class="formModel_confirm" @click="updatePassword">修改密码</el-button>
-					</div>
-				</el-form>
+			<div class="bg-white border border-slate-200 rounded-lg shadow-sm p-6 hover:shadow-md hover:border-orange-300 transition-all duration-200">
+				<div class="flex flex-wrap gap-3 mb-6 border-b border-slate-200 pb-4">
+					<button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200" :class="tabIndex=='center' ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" @click="tabClick({tableName:'center'})">
+						<User class="w-4 h-4 inline mr-2" />
+						个人中心
+					</button>
+					<button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200" :class="tabIndex=='updatePassword' ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" @click="tabClick({tableName:'updatePassword'})">
+						<Lock class="w-4 h-4 inline mr-2" />
+						修改密码
+					</button>
+					<template v-for="(item,index) in menuList">
+						<div v-if="item.child.length>1" class="relative" @mouseenter="usersTabHover(index)" @mouseleave="usersTabLeave">
+							<button type="button" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all duration-200">
+								{{item.menu}}
+								<ChevronDown class="w-4 h-4 inline ml-1" />
+							</button>
+							<el-collapse-transition>
+								<div class="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[150px]" v-if="usersTabIndex==index">
+									<button type="button" v-for="(items,indexs) in item.child" class="block w-full px-4 py-2 text-left text-sm hover:bg-orange-50 hover:text-orange-600 transition-colors" @click="tabClick(items)">
+										{{items.menu}}
+									</button>
+								</div>
+							</el-collapse-transition>
+						</div>
+						<div v-else-if="hasBack(item.child[0])">
+							<button type="button" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all duration-200" @click="tabClick(item.child[0])">
+								{{item.child[0].menu}}
+							</button>
+						</div>
+					</template>
+					<button type="button" v-if="btnAuth('storeup','查看')" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all duration-200" @click="tabClick({tableName:'storeup',type:1})">
+						<Heart class="w-4 h-4 inline mr-2" />
+						我的收藏
+					</button>
+				</div>
+				<div class="space-y-6" v-if="tabIndex=='center'">
+					<el-form class="usersForm" ref="userFormRef" :model="userForm" label-width="120px" :rules="rules">
+						<el-row :gutter="6">
+							<el-col :span="12">
+								<el-form-item prop="duizhangzhanghao" label="队长账号">
+									<el-input class="form-input" v-model="userForm.duizhangzhanghao" placeholder="队长账号" readonly></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item prop="duizhangxingming" label="队长姓名">
+									<el-input class="form-input" v-model="userForm.duizhangxingming" placeholder="队长姓名" ></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="24">
+								<el-form-item prop="zhaopian" label="照片">
+									<uploads
+										action="file/upload" 
+										tip="请上传照片"
+										style="width: 100%;text-align: left;"
+										:fileUrls="userForm.zhaopian?userForm.zhaopian:''" 
+										@change="zhaopianUploadSuccess">
+									</uploads>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="性别" prop="xingbie">
+									<el-select
+										class="form-select"
+										v-model="userForm.xingbie" 
+										placeholder="请选择性别"
+										style="width:100%;"
+										>
+										<el-option v-for="(item,index) in xingbieLists" :label="item" :value="item">
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item prop="dianhua" label="电话">
+									<el-input class="form-input" v-model="userForm.dianhua" placeholder="电话" ></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="球队名称" prop="qiuduimingcheng">
+									<el-select
+										disabled
+										class="form-select"
+										v-model="userForm.qiuduimingcheng" 
+										placeholder="请选择球队名称"
+										style="width:100%;"
+										>
+										<el-option v-for="(item,index) in qiuduimingchengLists" :label="item" :value="item">
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<div class="flex justify-end gap-3 pt-6">
+							<el-button class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors shadow-sm" @click="updateSession">
+								<Save class="w-4 h-4 inline mr-2" />
+								更新信息
+							</el-button>
+							<el-button class="px-6 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition-colors shadow-sm" @click="loginout">
+								<LogOut class="w-4 h-4 inline mr-2" />
+								退出登录
+							</el-button>
+						</div>
+					</el-form>
+				</div>
+				<div class="space-y-6" v-if="tabIndex=='updatePassword'">
+					<el-form class="usersForm" ref="passwordFormRef" :model="passwordForm" label-width="120px"
+						:rules="passwordRules">
+						<el-row :gutter="6">
+							<el-col :span="12">
+								<el-form-item label="原密码" prop="mima">
+									<el-input class="form-input" v-model="passwordForm.mima" placeholder="原密码"
+										type="password" show-password></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="新密码" prop="newmima">
+									<el-input class="form-input" v-model="passwordForm.newmima" placeholder="新密码"
+										type="password" show-password></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="确认密码" prop="newmima2">
+									<el-input class="form-input" v-model="passwordForm.newmima2" placeholder="确认密码"
+										type="password" show-password></el-input>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<div class="flex justify-end pt-6">
+							<el-button class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors shadow-sm" @click="updatePassword">
+								<Lock class="w-4 h-4 inline mr-2" />
+								修改密码
+							</el-button>
+						</div>
+					</el-form>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -135,6 +167,7 @@
 	import { useStore } from 'vuex'
 	const store = useStore()
 	import menu from '@/utils/menu'
+	import { User, Lock, ChevronDown, Heart, Save, LogOut } from 'lucide-vue-next'
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
     const baseUrl = ref(context.$config.url)
 	const route = useRoute()
@@ -350,544 +383,62 @@
 </script>
 
 <style lang="scss" scoped>
-	.usersView {
-		.usersBox {
-			.usersForm {
-				// form item
-				:deep(.el-form-item) {
-					// 内容盒子
-					.el-form-item__content {
-					}
-				}
+	.usersForm {
+		:deep(.el-form-item) {
+			.el-form-item__content {
 			}
 		}
 	}
-</style>
-<style lang="scss">
-/**总盒子**/
-.center_view {
-    width: 100%;
-    padding: 0 7% 50px;
-    margin: 0 auto;
-    overflow: hidden;
-    font-size: 16px;
-    background: #FFFFFF;
-    display: flex;
-    flex-wrap: wrap;
-    /* display: flex; */
-}
-/**内容区**/
-.center_view .usersView{
-    flex: 1;
-    display: flex;
-    flex-direction:column;
-    margin: 20px 0;
-    padding: 20px;
-   background: #FFF7E8;
-border-radius: 20px 20px 20px 20px;
-}
-
-/**右部 总盒子**/
-.center_view .usersView .usersBox{
-    width: calc(100% - 0px);
-    background: none;
-    margin: 0px;
-    padding: 20px 0;
-    box-sizing: border-box;
-    box-shadow: none;
-    border-radius: 0 0 6px 6px;
-    padding-bottom: 50px;
-border-radius: 0px 0px 0px 0px;
-    border: 0px solid #D6D6D6;
-    border-top:0
-}
-/**form盒子**/
-.center_view .usersView .usersBox .usersForm{
-    width: 100%;
-    padding: 30px;
-}
-.center_view .usersView .usersBox .usersForm .el-form-item{
-    margin: 0px 0px 20px;
-    display: flex;
-}
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__label{
-    width: 150px !important;
-    background: none;
-    text-align: right;
-    display: block;
-    font-size: 16px;
-    color: rgb(51, 51, 51);
-    font-weight: 500;
-}
-.center_view .list_inp .el-form-item__content{
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    width: calc(100% - 120px);
-}
-.center_view .el-form-item .el-input__wrapper{
-    height: 36px;
-    line-height: 36px;
-    padding: 0px 10px;
-    width: 100%;
-    box-sizing: border-box;
-    background: rgb(255, 255, 255);
-    font-size: 16px;
-    border-radius: 5px;
-}
-.center_view .el-input__wrapper.is-focus {
-    box-shadow: 0 0 0 1px var(--theme) inset;
-}
-
-/**会员**/
-.center_view .vip_item{
-    display: flex;
-    align-items: center;
-}
-.center_view .vip_item .vip_btn{
-    background: var(--theme);
-    color: rgb(255, 255, 255);
-    height: 36px;
-    line-height: 36px;
-    padding: 0px 20px;
-    border-radius: 8px;
-    margin: 0px 0px 0px 5px;
-    border-color: var(--theme);
-}
-/**end**/
-
-/**下拉选择**/
-.center_view .el-form-item__content .list_sel{
-    line-height: 36px;
-    /* border: 1px solid var(--theme); */
-    box-sizing: border-box;
-    width: calc(100% - 120px);
-    padding: 0;
-    border-radius: 0px;
-    background: rgb(255, 255, 255);
-    font-size: 16px;
-    border-radius: 4px;
-}
-.center_view .el-form-item__content .list_sel .el-select__wrapper{
-    line-height: 36px;
-    border-radius:5px;
-}
-.center_view .el-form-item__content .list_sel .el-select__wrapper.is-focused {
-    box-shadow: 0 0 0 1px var(--theme) inset;
-}
-.center_view .el-select-dropdown__item.is-selected {
-    color: var(--theme);
-    font-weight: 700;
-}
-/**end**/
-
-/**日期选择**/
-.center_view .el-form-item__content .list_date{
-    line-height: 36px;
-    box-sizing: border-box;
-    width: 100%;
-    background: none;
-    font-size: 16px;
-    border-radius: 4px;
-}
-/**end**/
-
-/**radio**/
-.center_view .list_radio{
-    display: flex;
-    width: calc(100% - 120px);
-    align-items: center;
-    flex-wrap: wrap;
-}
-.center_view .list_radio .el-radio{
-    width: 30%;
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.center_view .list_radio .el-radio .el-radio__inner{
-    border-color: #999;
-    background: #fff;
-}
-.center_view .list_radio .el-radio .el-radio__label{
-    color: #999;
-    font-size: 16px;
-}
-.center_view .list_radio .el-radio.is-checked .el-radio__inner{
-    border-color: var(--theme);
-    background: var(--theme);
-}
-.center_view .list_radio .el-radio.is-checked .el-radio__label{
-    color: var(--theme);
-    font-size: 16px;
-}
-/**end**/
-
-/**checkbox**/
-.center_view .list_checkbox{
-    display: flex;
-    width: calc(100% - 120px);
-    flex-wrap: wrap;
-    align-items: center;
-}
-.center_view .list_checkbox .el-checkbox{
-    width: 20%;
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.center_view .list_checkbox .el-checkbox__inner{
-    border-color: #999;
-    background: #fff;
-}
-.center_view .list_checkbox .el-checkbox__label{
-    color: #999;
-    font-size: 16px;
-}
-.center_view .list_checkbox .el-checkbox.is-checked .el-checkbox__inner{
-    border-color: var(--theme);
-    background: var(--theme);
-}
-.center_view .list_checkbox .el-checkbox.is-checked .el-checkbox__label{
-    color: var(--theme);
-    font-size: 16px;
-}
-/**end**/
-
-/**textarea**/
-.center_view .list_textarea{
-}
-.center_view .list_textarea .el-textarea__inner{
-    width: 100%;
-    min-height: 150px;
-    padding: 12px;
-    /* border: 1px solid var(--theme); */
-    border-radius: 0px;
-    color: #666;
-    font-size: 16px;
-    border-radius: 4px;
-}
-/**end**/
-
-/**图片上传**/
-/* 盒子 */
-.center_view .el-upload--picture-card{
-    background-color: rgb(255, 255, 255);
-    width: 100px;
-    height: 90px;
-    line-height: 100px;
-    text-align: center;
-    border:1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-}
-/* 图标 */
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__content .el-upload--picture-card .el-icon{
-    font-size: 32px;
-    color: #999;
-}
-/* 提示语 */
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__content .img-uploader .el-upload__tip{
-    font-size: 15px;
-    color: #999;
-    margin: 0;
-}
-.center_view .el-upload-list--picture-card .el-upload-list__item{
-    border: none;
-}
-/**end**/
-
-/**文件上传**/
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__content .el-upload--text .el-upload-dragger{
-    background: #FFFFFF;
-    border:1px solid #ddd;
-    border-radius: 0px;
-    box-sizing: border-box;
-    width: 100%;
-    height: auto;
-    text-align: center;
-    cursor: pointer;
-    overflow: hidden;
-    padding:0 0 10px;
-    line-height: 1
-}
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__content .el-upload--text .el-upload-dragger .el-icon--upload {
-    color: var(--el-text-color-placeholder);
-    font-size: 60px;
-    line-height: 50px;
-    margin-bottom: 10px;
-}
-/* 图标 */
-.center_view .el-upload--text .el-upload-dragger .el-icon-upload{
-    font-size: 60px;
-    color: var(--theme);
-    line-height: 1;
-    margin-bottom: 0;
-}
-/* 提示语 */
-.center_view .upload-demo .el-upload__tip{
-    font-size: 15px;
-    color: #999;
-    margin: 10px 0 0;
-    line-height:1;
-    padding: 0;
-}
-/* 点击上传 */
-.center_view .el-upload--text .el-upload-dragger em{
-    color: var(--theme);
-    font-size: 15px;
-}
-/**end**/
-
-/**富文本**/
-.center_view .list_editor{
-    width: 100%;
-    height: auto;
-    margin: 0px;
-    padding: 0px;
-    border-radius: 0px;
-    background: rgb(255, 255, 255);
-    /* border: 1px solid var(--theme); */
-    min-height: 300px;
-}
-/**end**/
-
-/**按钮**/
-.center_view .formModel_btn_box{
-    width: 100%;
-    padding: 10px 0px 10px 150px;
-    margin: 40px 0px 0px;
-    /* text-align: right; */
-    display: flex;
-    justify-content: flex-end;
-}
-/**更新信息**/
-.center_view .formModel_btn_box .formModel_confirm{
-    margin: 0px 0px 0px 20px;
-    padding: 0px 24px;
-    width: auto;
-    height: 40px;
-    font-size: 16px;
-    color: rgb(255, 255, 255);
-    border-radius: 0px;
-    border: 0px;
-    cursor: pointer;
-    background: var(--theme);
-    border-radius: 4px;
-}
-.center_view .formModel_btn_box .formModel_confirm:hover{
-    background: var(--theme);
-}
-/**退出登陆**/
-.center_view .formModel_btn_box .formModel_cancel{
-    margin: 0px 0px 0px 20px;
-    padding: 0px 24px;
-    width: auto;
-    height: 40px;
-    font-size: 16px;
-    color: rgb(255, 255, 255);
-    border-radius: 0px;
-    border: 0px;
-    cursor: pointer;
-    background: rgba(142, 142, 142, 1);
-    border-radius: 4px;
-    order: 2;
-}
-.center_view .formModel_btn_box .formModel_cancel:hover{
-    background: rgba(66, 66, 66,1);
-}
-
-
-.center_view .el-form-item .upload-demo {
-    width: 360px;
-}
-
-/* nf9 */
-/* 标题 */
-
-
-.center_view .usersView .usersBox .usersForm .el-form-item{
-    margin:10px;
-    display: flex;
-  
-  justify-content: flex-start; /* 左对齐 */
-}
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__label{
-    width: 150px !important;
-    background: none;
-    text-align: left;
-    display: block;
-   font-weight: 400;
-font-size: 18px;
-color: #585858;
-    padding-left:10px;
-}
-.center_view .el-form-item .el-input__wrapper{
-    height: 36px;
-    line-height: 36px;
-    padding: 0px 10px;
-    box-sizing: border-box;
-
-    font-size: 16px;
-background: #FFFFFF;
-border-radius: 5px;
-border: 1px solid #A8A8A8;
-    box-shadow:none;
-}
-.center_view .el-select__wrapper{
-background: #FFFFFF;
-border-radius: 10px 10px 10px 10px;
-    border-radius: 0px;
-border: 1px solid #A8A8A8;
-    box-shadow:none;
-}
-
-.center_view .el-textarea__inner{
-       background: #FFFFFF;
-border-radius: 0px;
-border: 1px solid #A8A8A8;
-    box-shadow:none;
-
-}
-.center_view .el-upload-list--picture-card .el-upload-list__item{
-
-border-radius:10px;
-}
-.center_view .el-upload--picture-card{
-     background: #F8F9FB;
-}
-.center_view .usersView .usersBox .usersForm .el-form-item .el-form-item__content .el-upload--text .el-upload-dragger{
-    border:none;
-border-radius: 5px 5px 5px 5px;
-border: 1px solid #A8A8A8;
-}
-
-.center_view .list_editor{
-     background: none;
-border-radius: 5px 5px 5px 5px;
-border: 1px solid #A8A8A8;
-}
-.center_view .editor-box {
-  border:none;
-    background:#FFFFFF;
-}
-.center_view .w-e-bar{
-    background:none;
-}
-.center_view .w-e-text-container{
- background:none;
-}
-.center_view .list_checkbox{
-    background: #FFFFFF;
-border-radius: 0px;
-}
-.center_view .el-checkbox__input{
-    display:none;
-}
-/* nf13 */
-.el-col.el-col-12 {
-        flex: 0 0 50%;
-    max-width: 50%;
-   
-
-}
-
-.center_view .el-row{
-  width:100%;
-
-  position:relative;
-}
-
-
-.el-col.el-col-24 {
-         flex: 0 0 50%;
-    max-width: 50%;
-}
-
-/* nf15 */
-/* 二级菜单盒子 */
-.center_view .usersTabView .usersTabHoverView{
-    position:relative;
-}
-/**tab总盒子**/
-.center_view .usersView .usersTabView{
-    box-sizing: border-box;
-    border-bottom: none;
-    background: none;
-    padding:  0;
-    display: flex;
-    column-gap: 20px;
-    flex-wrap: wrap;
-    width: 100%;
-     
-    flex-shrink: 0;
-border-radius: 0px 0px 0px 0px;
-border-top: 1px solid #D6D6D6;
-border-bottom: 1px solid #D6D6D6;
-  
-    margin-right: 50px;
-    order: 0;
-
-}
-/**item**/
-.center_view .usersView .usersTabView .usersTab{
-    padding: 0 20px;
-    box-sizing: border-box;
-    cursor: pointer;
-    color: #000000;
-    text-align: center;
-    position: relative;
-   height:50px;
-    line-height:50px;
-background: none;
-border-radius: 0px;
-}
-.center_view .usersView .usersTabView .usersTab:hover{
-border-radius: 0px 0px 0px 0px;
-    color: #FF6F2C;
-}
-.center_view .usersView .usersTabView .usersTab.usersTabActive{
-
-border-radius: 0px 0px 0px 0px;
-    color:#FF6F2C;
-}
-
-.usersTabView .usersTabHoverView {
-    background: #fff;
-    color: #000000;
-    z-index: 9;
-}
-.usersTabView .usersTabHoverTab {
-    line-height: 50px;
-    height:50px;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #000000;
-    padding: 0 20px;
-border-radius: 0px;
- 
-}
-
-.usersTabView .usersTabHoverTab:hover {
-    color:#FF6F2C;
-   
-}
-/* nf15 */
-.center_view .section_title{
-    height:570px;
-    color:#000000;
-    font-size:30px;
-    font-weight:700;
-    width:180px;
-    background:url('http://clfile.zggen.cn/20251110/3d4b8600e89543fd97fdefc5525dc3ef.png')no-repeat;
-    background-size:100% 100%;
-    text-align: center;
-    padding-top: 20px;
-    margin:20px 20px 0px 0px;
-}
+	
+	.form-input {
+		:deep(.el-input__wrapper) {
+			border-radius: 8px;
+			border: 1px solid #e2e8f0;
+			box-shadow: none;
+			transition: all 0.2s;
+			
+			&:hover {
+				border-color: #cbd5e1;
+			}
+			
+			&.is-focus {
+				border-color: #f97316;
+				box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+			}
+		}
+	}
+	
+	.form-select {
+		:deep(.el-select__wrapper) {
+			border-radius: 8px;
+			border: 1px solid #e2e8f0;
+			box-shadow: none;
+			transition: all 0.2s;
+			
+			&:hover {
+				border-color: #cbd5e1;
+			}
+			
+			&.is-focused {
+				border-color: #f97316;
+				box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+			}
+		}
+	}
+	
+	:deep(.el-upload--picture-card) {
+		border: 2px dashed #e2e8f0;
+		border-radius: 8px;
+		background: #f8fafc;
+		transition: all 0.2s;
+		
+		&:hover {
+			border-color: #f97316;
+			background: #fff7ed;
+		}
+	}
+	
+	:deep(.el-upload-list--picture-card .el-upload-list__item) {
+		border-radius: 8px;
+	}
 </style>
