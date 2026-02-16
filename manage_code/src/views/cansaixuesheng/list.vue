@@ -1,159 +1,183 @@
 <template>
 	<div>
 		<div class="center_view">
-			<div class="list_search_view">
-				<el-form :model="searchQuery" class="search_form" >
-					<div class="search_view">
-						<div class="search_label">
-							学号：
-						</div>
-						<div class="search_box">
-							<el-input class="search_inp" v-model="searchQuery.xuehao" placeholder="学号"
-								clearable>
-							</el-input>
-						</div>
-					</div>
-					<div class="search_view">
-						<div class="search_label">
-							姓名：
-						</div>
-						<div class="search_box">
-							<el-input class="search_inp" v-model="searchQuery.xingming" placeholder="姓名"
-								clearable>
-							</el-input>
+			<div class="page_shell">
+				<div class="page_top_line"></div>
+				<div class="page_container">
+					<div class="page_header">
+						<div class="page_header__left">
+							<div class="page_icon">
+								<GraduationCap class="page_icon__svg" />
+							</div>
+							<div class="page_titles">
+								<div class="page_title">参赛学生管理</div>
+								<div class="page_subtitle">管理参赛学生信息并支持数量统计查看</div>
+							</div>
 						</div>
 					</div>
-					<div class="search_btn_view">
-						<el-button class="search_btn" type="primary" @click="searchClick()" size="small">搜索</el-button>
+
+					<div class="search_card list_search_view">
+						<el-form :model="searchQuery" class="search_form">
+							<div class="search_view">
+								<div class="search_label">
+									学号：
+								</div>
+								<div class="search_box">
+									<el-input class="search_inp" v-model="searchQuery.xuehao" placeholder="学号" clearable>
+										<template #prefix>
+											<Search class="field_icon" />
+										</template>
+									</el-input>
+								</div>
+							</div>
+							<div class="search_view">
+								<div class="search_label">
+									姓名：
+								</div>
+								<div class="search_box">
+									<el-input class="search_inp" v-model="searchQuery.xingming" placeholder="姓名" clearable>
+										<template #prefix>
+											<Search class="field_icon" />
+										</template>
+									</el-input>
+								</div>
+							</div>
+							<div class="search_btn_view">
+								<el-button class="btn_primary" type="primary" @click="searchClick()" size="small">搜索</el-button>
+							</div>
+						</el-form>
+						<div class="btn_view">
+							<el-button class="btn_primary" type="success" @click="addClick" v-if="btnAuth('cansaixuesheng','新增')">
+								新增
+							</el-button>
+							<el-button class="btn_danger" type="danger" :disabled="selRows.length?false:true" @click="delClick(null)" v-if="btnAuth('cansaixuesheng','删除')">
+								删除
+							</el-button>
+							<el-button class="btn_secondary" type="warning" @click.stop="echartClick1" v-if="btnAuth('cansaixuesheng','学生数量统计')">
+								学生数量统计
+							</el-button>
+						</div>
 					</div>
-				</el-form>
-				<div class="btn_view">
-					<el-button class="add_btn" type="success" @click="addClick" v-if="btnAuth('cansaixuesheng','新增')">
-						新增
-					</el-button>
-					<el-button class="del_btn" type="danger" :disabled="selRows.length?false:true" @click="delClick(null)"  v-if="btnAuth('cansaixuesheng','删除')">
-						删除
-					</el-button>
-                    <el-button class="statis_btn" type="warning" @click="echartClick1" v-if="btnAuth('cansaixuesheng','学生数量统计')">
-                        学生数量统计
-                    </el-button>
+
+					<div class="table_card">
+						<el-table
+							v-loading="listLoading" border :stripe='false'
+							@selection-change="handleSelectionChange"
+							ref="table"
+							v-if="btnAuth('cansaixuesheng','查看')"
+							:data="list"
+							@row-click="listChange"
+							class="data_table">
+							<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
+							<el-table-column label="序号" width="80" :resizable='true' align="left" header-align="left">
+								<template #default="scope">
+									<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="xuehao"
+								label="学号">
+								<template #default="scope">
+									{{scope.row.xuehao}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="xingming"
+								label="姓名">
+								<template #default="scope">
+									{{scope.row.xingming}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="xingbie"
+								label="性别">
+								<template #default="scope">
+									{{scope.row.xingbie}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="nianling"
+								label="年龄">
+								<template #default="scope">
+									{{scope.row.nianling}}
+								</template>
+							</el-table-column>
+							<el-table-column label="头像" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
+								<template #default="scope">
+									<div v-if="scope.row.touxiang" @click.stop>
+										<el-image v-if="scope.row.touxiang.substring(0,4)=='http'" preview-teleported
+											:preview-src-list="[scope.row.touxiang.split(',')[0]]"
+											:src="scope.row.touxiang.split(',')[0]" style="width:64px;height:64px;border-radius:14px"></el-image>
+										<el-image v-else preview-teleported
+											:preview-src-list="[$config.url+scope.row.touxiang.split(',')[0]]"
+											:src="$config.url+scope.row.touxiang.split(',')[0]" style="width:64px;height:64px;border-radius:14px">
+										</el-image>
+									</div>
+									<div v-else class="muted">无图片</div>
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="shouji"
+								label="手机">
+								<template #default="scope">
+									{{scope.row.shouji}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="email"
+								label="邮箱">
+								<template #default="scope">
+									{{scope.row.email}}
+								</template>
+							</el-table-column>
+							<el-table-column label="操作" class-name="operation-cell" width="260"  :resizable='true' :sortable='false' align="left" header-align="left">
+								<template #default="scope">
+									<el-button class="btn_secondary" type="info" v-if=" btnAuth('cansaixuesheng','查看')" @click.stop="infoClick(scope.row.id)">详情</el-button>
+									<el-button class="btn_secondary" type="primary" v-if=" btnAuth('cansaixuesheng','修改')" @click.stop="editClick(scope.row.id,scope.row)">修改</el-button>
+									<el-button class="btn_danger" type="danger" v-if="btnAuth('cansaixuesheng','删除')" @click.stop="delClick(scope.row.id,scope.row)">删除</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+
+					<el-pagination
+						background
+						:layout="layouts.join(',')"
+						:total="total"
+						:page-size="listQuery.limit"
+						v-model:current-page="listQuery.page"
+						prev-text="<"
+						next-text=">"
+						:hide-on-single-page="true"
+						:page-sizes="[10, 20, 30, 40, 50, 100]"
+						@size-change="sizeChange"
+						@current-change="currentChange" />
 				</div>
 			</div>
-			<el-table
-				v-loading="listLoading" border :stripe='false'
-				@selection-change="handleSelectionChange"
-				ref="table"
-				v-if="btnAuth('cansaixuesheng','查看')"
-				:data="list"
-				@row-click="listChange">
-				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
-				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="xuehao"
-					label="学号">
-					<template #default="scope">
-						{{scope.row.xuehao}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="xingming"
-					label="姓名">
-					<template #default="scope">
-						{{scope.row.xingming}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="xingbie"
-					label="性别">
-					<template #default="scope">
-						{{scope.row.xingbie}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="nianling"
-					label="年龄">
-					<template #default="scope">
-						{{scope.row.nianling}}
-					</template>
-				</el-table-column>
-				<el-table-column label="头像" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<div v-if="scope.row.touxiang">
-							<el-image v-if="scope.row.touxiang.substring(0,4)=='http'" preview-teleported
-								:preview-src-list="[scope.row.touxiang.split(',')[0]]"
-								:src="scope.row.touxiang.split(',')[0]" style="width:100px;height:100px"></el-image>
-							<el-image v-else preview-teleported
-								:preview-src-list="[$config.url+scope.row.touxiang.split(',')[0]]"
-								:src="$config.url+scope.row.touxiang.split(',')[0]" style="width:100px;height:100px">
-							</el-image>
-						</div>
-						<div v-else>无图片</div>
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="shouji"
-					label="手机">
-					<template #default="scope">
-						{{scope.row.shouji}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="email"
-					label="邮箱">
-					<template #default="scope">
-						{{scope.row.email}}
-					</template>
-				</el-table-column>
-				<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<el-button class="view_btn" type="info" v-if=" btnAuth('cansaixuesheng','查看')" @click="infoClick(scope.row.id)">
-							详情
-						</el-button>
-						<el-button class="edit_btn" type="primary" @click="editClick(scope.row.id,scope.row)" v-if=" btnAuth('cansaixuesheng','修改')">
-							修改						</el-button>
-						<el-button class="del_btn" type="danger" @click="delClick(scope.row.id,scope.row)"  v-if="btnAuth('cansaixuesheng','删除')">
-							删除						</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-			<el-pagination
-				background
-				:layout="layouts.join(',')"
-				:total="total"
-				:page-size="listQuery.limit"
-                v-model:current-page="listQuery.page"
-				prev-text="<"
-				next-text=">"
-				:hide-on-single-page="true"
-				:page-sizes="[10, 20, 30, 40, 50, 100]"
-				@size-change="sizeChange"
-				@current-change="currentChange"  />
 		</div>
 		<formModel ref="formRef" @formModelChange="formModelChange"></formModel>
 		<!-- 统计图弹窗 -->
@@ -195,6 +219,7 @@
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	const baseUrl = ref(context.$config.url)
 	import formModel from './formModel.vue'
+	import { GraduationCap, Search } from 'lucide-vue-next'
 	//基础信息
 	const tableName = 'cansaixuesheng'
 	const formName = '参赛学生'
@@ -452,12 +477,167 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
-		}
+	.page_shell{
+		width: 100%;
+		background: #f8fafc;
+		border-radius: 18px;
+		border: 1px solid #e2e8f0;
+		overflow: hidden;
+	}
+	.page_top_line{
+		height: 1px;
+		background: linear-gradient(90deg, rgba(249,115,22,0) 0%, rgba(249,115,22,1) 35%, rgba(234,88,12,1) 65%, rgba(249,115,22,0) 100%);
+	}
+	.page_container{
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 40px 24px;
+	}
+
+	.page_header{
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 18px;
+	}
+	.page_header__left{
+		display: flex;
+		align-items: center;
+		gap: 14px;
+	}
+	.page_icon{
+		width: 48px;
+		height: 48px;
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+		box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.20), 0 4px 6px -4px rgba(249, 115, 22, 0.20);
+		color: #fff;
+		flex: 0 0 auto;
+	}
+	.page_icon__svg{
+		width: 22px;
+		height: 22px;
+	}
+	.page_title{
+		font-size: 28px;
+		font-weight: 800;
+		color: #0f172a;
+		line-height: 1.15;
+	}
+	.page_subtitle{
+		margin-top: 6px;
+		font-size: 12px;
+		color: #64748b;
+		line-height: 1.25;
+	}
+
+	.search_card{
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 16px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		padding: 16px;
+	}
+	.search_form{
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 16px;
+	}
+	.field_icon{
+		width: 16px;
+		height: 16px;
+		color: #94a3b8;
+	}
+	:deep(.search_inp .el-input__wrapper),
+	:deep(.search_sel .el-select__wrapper){
+		border-radius: 12px;
+	}
+	:deep(.search_inp .el-input__wrapper.is-focus),
+	:deep(.search_sel .el-select__wrapper.is-focused){
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18) !important;
+	}
+	:deep(.search_inp .el-input__wrapper.is-focus),
+	:deep(.search_sel .el-select__wrapper.is-focused){
+		border-color: #f97316 !important;
+	}
+
+	.btn_primary{
+		border-radius: 12px;
+		background: #f97316 !important;
+		border-color: #f97316 !important;
+		color: #fff !important;
+		box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.20), 0 4px 6px -4px rgba(249, 115, 22, 0.20);
+	}
+	.btn_primary:hover{
+		background: #ea580c !important;
+		border-color: #ea580c !important;
+	}
+	.btn_secondary{
+		border-radius: 12px;
+		background: #fff !important;
+		border-color: #e2e8f0 !important;
+		color: #334155 !important;
+	}
+	.btn_secondary:hover{
+		background: #f8fafc !important;
+		border-color: #cbd5e1 !important;
+	}
+	.btn_danger{
+		border-radius: 12px;
+	}
+
+	.table_card{
+		margin-top: 18px;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 16px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		overflow: hidden;
+	}
+
+	.index_pill{
+		width: 40px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+	}
+	.muted{
+		color: #94a3b8;
+		font-size: 12px;
+	}
+
+	:deep(.data_table){
+		--el-table-border-color: transparent;
+		--el-table-border: 0;
+	}
+	:deep(.data_table .el-table__header-wrapper th.el-table__cell){
+		background: #f8fafc;
+		border-bottom: 1px solid #e2e8f0;
+		color: #475569;
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+	:deep(.data_table .el-table__row td.el-table__cell){
+		border-bottom: 1px solid #f1f5f9;
+	}
+	:deep(.data_table .el-table__row:hover td.el-table__cell){
+		background: #f8fafc;
+	}
+
+	:deep(.operation-cell .el-button){
+		border-radius: 12px;
 	}
 	.condition-box {
 		display: flex;

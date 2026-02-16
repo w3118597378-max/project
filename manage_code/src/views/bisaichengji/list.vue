@@ -1,222 +1,232 @@
 <template>
 	<div>
 		<div class="center_view">
-			<div class="list_search_view">
-				<el-form :model="searchQuery" class="search_form" >
-					<div class="search_view">
-						<div class="search_label">
-							赛事名称：
-						</div>
-						<div class="search_box">
-							<el-input class="search_inp" v-model="searchQuery.saishimingcheng" placeholder="赛事名称"
-								clearable>
-							</el-input>
-						</div>
-					</div>
-					<div class="search_view">
-						<div class="search_label">
-							球队名称：
-						</div>
-						<div class="search_box">
-							<el-input class="search_inp" v-model="searchQuery.qiuduimingcheng" placeholder="球队名称"
-								clearable>
-							</el-input>
+			<div class="page_shell">
+				<div class="page_top_line"></div>
+				<div class="page_container">
+					<div class="page_header">
+						<div class="page_header__left">
+							<div class="page_icon">
+								<Trophy class="page_icon__svg" />
+							</div>
+							<div class="page_titles">
+								<div class="page_title">比赛成绩管理</div>
+								<div class="page_subtitle">维护比赛结果与积分排名信息</div>
+							</div>
 						</div>
 					</div>
-					<div class="search_btn_view">
-						<el-button class="search_btn" type="primary" @click="searchClick()" size="small">搜索</el-button>
+
+					<div class="search_card list_search_view">
+						<el-form :model="searchQuery" class="search_form">
+							<div class="search_view">
+								<div class="search_label">赛事名称：</div>
+								<div class="search_box">
+									<el-input class="search_inp" v-model="searchQuery.saishimingcheng" placeholder="赛事名称" clearable>
+										<template #prefix><Search class="field_icon" /></template>
+									</el-input>
+								</div>
+							</div>
+							<div class="search_view">
+								<div class="search_label">球队名称：</div>
+								<div class="search_box">
+									<el-input class="search_inp" v-model="searchQuery.qiuduimingcheng" placeholder="球队名称" clearable>
+										<template #prefix><Search class="field_icon" /></template>
+									</el-input>
+								</div>
+							</div>
+							<div class="search_btn_view">
+								<el-button class="btn_primary" type="primary" @click="searchClick()" size="small">搜索</el-button>
+							</div>
+						</el-form>
+						<div class="btn_view">
+							<el-button class="btn_primary" type="success" @click="addClick" v-if="btnAuth('bisaichengji','新增')">新增</el-button>
+							<el-button class="btn_danger" type="danger" :disabled="selRows.length?false:true" @click="delClick(null)" v-if="btnAuth('bisaichengji','删除')">删除</el-button>
+						</div>
 					</div>
-				</el-form>
-				<div class="btn_view">
-					<el-button class="add_btn" type="success" @click="addClick" v-if="btnAuth('bisaichengji','新增')">
-						新增
-					</el-button>
-					<el-button class="del_btn" type="danger" :disabled="selRows.length?false:true" @click="delClick(null)"  v-if="btnAuth('bisaichengji','删除')">
-						删除
-					</el-button>
+
+					<div class="table_card">
+						<el-table
+							v-loading="listLoading" border :stripe='false'
+							@selection-change="handleSelectionChange"
+							ref="table"
+							v-if="btnAuth('bisaichengji','查看')"
+							:data="list"
+							@row-click="listChange"
+							class="data_table">
+							<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
+							<el-table-column label="序号" width="80" :resizable='true' align="left" header-align="left">
+								<template #default="scope">
+									<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="saishimingcheng"
+								label="赛事名称">
+								<template #default="scope">
+									{{scope.row.saishimingcheng}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="bisaichangdi"
+								label="比赛场地">
+								<template #default="scope">
+									{{scope.row.bisaichangdi}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="bisaishijian"
+								label="比赛时间">
+								<template #default="scope">
+									{{scope.row.bisaishijian}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="qiuduimingcheng"
+								label="球队名称">
+								<template #default="scope">
+									{{scope.row.qiuduimingcheng}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="qiuduijifen"
+								label="球队积分">
+								<template #default="scope">
+									{{scope.row.qiuduijifen}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="bisaipaiming"
+								label="比赛排名">
+								<template #default="scope">
+									{{scope.row.bisaipaiming}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="chengjibifen"
+								label="成绩比分">
+								<template #default="scope">
+									{{scope.row.chengjibifen}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="bisaijieguo"
+								label="比赛结果">
+								<template #default="scope">
+									{{scope.row.bisaijieguo}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="teshushijian"
+								label="特殊事件">
+								<template #default="scope">
+									{{scope.row.teshushijian}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="panfashuoming"
+								label="判罚说明">
+								<template #default="scope">
+									{{scope.row.panfashuoming}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="fabushijian"
+								label="发布时间">
+								<template #default="scope">
+									{{scope.row.fabushijian}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="caipanzhanghao"
+								label="裁判账号">
+								<template #default="scope">
+									{{scope.row.caipanzhanghao}}
+								</template>
+							</el-table-column>
+							<el-table-column min-width="140"
+								:resizable='true'
+								:sortable='false'
+								align="left"
+								header-align="left"
+								prop="caipanxingming"
+								label="裁判姓名">
+								<template #default="scope">
+									{{scope.row.caipanxingming}}
+								</template>
+							</el-table-column>
+							<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
+								<template #default="scope">
+									<el-button class="btn_secondary" type="info" v-if=" btnAuth('bisaichengji','查看')" @click.stop="infoClick(scope.row.id)">详情</el-button>
+									<el-button class="btn_secondary" type="primary" v-if=" btnAuth('bisaichengji','修改')" @click.stop="editClick(scope.row.id,scope.row)">修改</el-button>
+									<el-button class="btn_danger" type="danger" v-if="btnAuth('bisaichengji','删除')" @click.stop="delClick(scope.row.id,scope.row)">删除</el-button>
+									<el-button class="btn_secondary" v-if="btnAuth('bisaichengji','申请')" type="success" @click.stop="jinjishenqingCrossAddOrUpdateHandler(scope.row,'cross','','','','')">申请</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
+					</div>
+
+					<el-pagination
+						background
+						:layout="layouts.join(',')"
+						:total="total"
+						:page-size="listQuery.limit"
+						v-model:current-page="listQuery.page"
+						prev-text="<"
+						next-text=">"
+						:hide-on-single-page="true"
+						:page-sizes="[10, 20, 30, 40, 50, 100]"
+						@size-change="sizeChange"
+						@current-change="currentChange" />
 				</div>
 			</div>
-			<el-table
-				v-loading="listLoading" border :stripe='false'
-				@selection-change="handleSelectionChange"
-				ref="table"
-				v-if="btnAuth('bisaichengji','查看')"
-				:data="list"
-				@row-click="listChange">
-				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
-				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="saishimingcheng"
-					label="赛事名称">
-					<template #default="scope">
-						{{scope.row.saishimingcheng}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="bisaichangdi"
-					label="比赛场地">
-					<template #default="scope">
-						{{scope.row.bisaichangdi}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="bisaishijian"
-					label="比赛时间">
-					<template #default="scope">
-						{{scope.row.bisaishijian}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuduimingcheng"
-					label="球队名称">
-					<template #default="scope">
-						{{scope.row.qiuduimingcheng}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="qiuduijifen"
-					label="球队积分">
-					<template #default="scope">
-						{{scope.row.qiuduijifen}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="bisaipaiming"
-					label="比赛排名">
-					<template #default="scope">
-						{{scope.row.bisaipaiming}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="chengjibifen"
-					label="成绩比分">
-					<template #default="scope">
-						{{scope.row.chengjibifen}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="bisaijieguo"
-					label="比赛结果">
-					<template #default="scope">
-						{{scope.row.bisaijieguo}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="teshushijian"
-					label="特殊事件">
-					<template #default="scope">
-						{{scope.row.teshushijian}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="panfashuoming"
-					label="判罚说明">
-					<template #default="scope">
-						{{scope.row.panfashuoming}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="fabushijian"
-					label="发布时间">
-					<template #default="scope">
-						{{scope.row.fabushijian}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="caipanzhanghao"
-					label="裁判账号">
-					<template #default="scope">
-						{{scope.row.caipanzhanghao}}
-					</template>
-				</el-table-column>
-				<el-table-column min-width="140"
-					:resizable='true'
-					:sortable='false'
-					align="left"
-					header-align="left"
-					prop="caipanxingming"
-					label="裁判姓名">
-					<template #default="scope">
-						{{scope.row.caipanxingming}}
-					</template>
-				</el-table-column>
-				<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
-					<template #default="scope">
-						<el-button class="view_btn" type="info" v-if=" btnAuth('bisaichengji','查看')" @click="infoClick(scope.row.id)">
-							详情
-						</el-button>
-						<el-button class="edit_btn" type="primary" @click="editClick(scope.row.id,scope.row)" v-if=" btnAuth('bisaichengji','修改')">
-							修改						</el-button>
-						<el-button class="del_btn" type="danger" @click="delClick(scope.row.id,scope.row)"  v-if="btnAuth('bisaichengji','删除')">
-							删除						</el-button>
-						<el-button class="cross_btn" v-if="btnAuth('bisaichengji','申请')" type="success" @click="jinjishenqingCrossAddOrUpdateHandler(scope.row,'cross','','','','')">
-							申请
-						</el-button>
-					</template>
-				</el-table-column>
-			</el-table>
-			<el-pagination
-				background
-				:layout="layouts.join(',')"
-				:total="total"
-				:page-size="listQuery.limit"
-                v-model:current-page="listQuery.page"
-				prev-text="<"
-				next-text=">"
-				:hide-on-single-page="true"
-				:page-sizes="[10, 20, 30, 40, 50, 100]"
-				@size-change="sizeChange"
-				@current-change="currentChange"  />
 		</div>
 		<formModel ref="formRef" @formModelChange="formModelChange"></formModel>
 		<jinjishenqingFormModel ref="jinjishenqingFormModelRef" @formModelChange="formModelChange"></jinjishenqingFormModel>
@@ -247,6 +257,7 @@
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	const baseUrl = ref(context.$config.url)
 	import formModel from './formModel.vue'
+	import { Trophy, Search } from 'lucide-vue-next'
 	//基础信息
 	const tableName = 'bisaichengji'
 	const formName = '比赛成绩'
@@ -443,11 +454,152 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
-		}
+	.page_shell{
+		width: 100%;
+		background: #f8fafc;
+		border-radius: 18px;
+		border: 1px solid #e2e8f0;
+		overflow: hidden;
+	}
+	.page_top_line{
+		height: 1px;
+		background: linear-gradient(90deg, rgba(249,115,22,0) 0%, rgba(249,115,22,1) 35%, rgba(234,88,12,1) 65%, rgba(249,115,22,0) 100%);
+	}
+	.page_container{
+		max-width: 1280px;
+		margin: 0 auto;
+		padding: 40px 24px;
+	}
+	.page_header{
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 18px;
+	}
+	.page_header__left{
+		display: flex;
+		align-items: center;
+		gap: 14px;
+	}
+	.page_icon{
+		width: 48px;
+		height: 48px;
+		border-radius: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+		box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.20), 0 4px 6px -4px rgba(249, 115, 22, 0.20);
+		color: #fff;
+		flex: 0 0 auto;
+	}
+	.page_icon__svg{
+		width: 22px;
+		height: 22px;
+	}
+	.page_title{
+		font-size: 28px;
+		font-weight: 800;
+		color: #0f172a;
+		line-height: 1.15;
+	}
+	.page_subtitle{
+		margin-top: 6px;
+		font-size: 12px;
+		color: #64748b;
+		line-height: 1.25;
+	}
+	.search_card{
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 16px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		padding: 16px;
+	}
+	.search_form{
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 16px;
+	}
+	.field_icon{
+		width: 16px;
+		height: 16px;
+		color: #94a3b8;
+	}
+	:deep(.search_inp .el-input__wrapper),
+	:deep(.search_sel .el-select__wrapper){
+		border-radius: 12px;
+	}
+	:deep(.search_inp .el-input__wrapper.is-focus),
+	:deep(.search_sel .el-select__wrapper.is-focused){
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18) !important;
+		border-color: #f97316 !important;
+	}
+	.btn_primary{
+		border-radius: 12px;
+		background: #f97316 !important;
+		border-color: #f97316 !important;
+		color: #fff !important;
+		box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.20), 0 4px 6px -4px rgba(249, 115, 22, 0.20);
+	}
+	.btn_primary:hover{
+		background: #ea580c !important;
+		border-color: #ea580c !important;
+	}
+	.btn_secondary{
+		border-radius: 12px;
+		background: #fff !important;
+		border-color: #e2e8f0 !important;
+		color: #334155 !important;
+	}
+	.btn_secondary:hover{
+		background: #f8fafc !important;
+		border-color: #cbd5e1 !important;
+	}
+	.btn_danger{
+		border-radius: 12px;
+	}
+	.table_card{
+		margin-top: 18px;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 16px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+		overflow: hidden;
+	}
+	.index_pill{
+		width: 40px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 12px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+	}
+	:deep(.data_table){
+		--el-table-border-color: transparent;
+		--el-table-border: 0;
+	}
+	:deep(.data_table .el-table__header-wrapper th.el-table__cell){
+		background: #f8fafc;
+		border-bottom: 1px solid #e2e8f0;
+		color: #475569;
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+	:deep(.data_table .el-table__row td.el-table__cell){
+		border-bottom: 1px solid #f1f5f9;
+	}
+	:deep(.data_table .el-table__row:hover td.el-table__cell){
+		background: #f8fafc;
+	}
+	:deep(.operation-cell .el-button){
+		border-radius: 12px;
 	}
 </style>
