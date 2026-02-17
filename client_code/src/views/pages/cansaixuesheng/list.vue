@@ -49,14 +49,22 @@
 <div class="item" v-for="(item,index) in list" @click.stop="detailClick(item.id)">
   
   <div class="content">
-
-          <div class="count-row">
-
-
-
+    <div class="avatar-container">
+      <img v-if="item.touxiang" 
+           :src="item.touxiang.substring(0,4)=='http' ? item.touxiang.split(',')[0] : (baseUrl + item.touxiang.split(',')[0])" 
+           :alt="item.xingming" 
+           class="student-avatar"
+           @click.stop="preViewClick(item.touxiang.substring(0,4)=='http' ? item.touxiang.split(',')[0] : (baseUrl + item.touxiang.split(',')[0]))">
+      <div v-else class="no-avatar">
+        <i class="el-icon-user"></i>
+      </div>
     </div>
-
-
+    <div class="student-info">
+      <h3 class="student-name">{{ item.xingming }}</h3>
+      <p class="student-id">学号：{{ item.xuehao }}</p>
+      <p class="student-gender">性别：{{ item.xingbie }}</p>
+      <p class="student-age">年龄：{{ item.nianling }}</p>
+    </div>
   </div>
 </div>
                 </div>
@@ -307,5 +315,113 @@
 }
 .condition-box>* {
     max-width: 300px;
+}
+
+.data_view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.item {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.avatar-container {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.student-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f0f0f0;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        border-color: #ff6b35;
+        transform: scale(1.05);
+    }
+}
+
+.no-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #e0e0e0;
+    
+    .el-icon-user {
+        font-size: 32px;
+        color: #999;
+    }
+}
+
+.student-info {
+    flex: 1;
+    width: 100%;
+}
+
+.student-name {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+}
+
+.student-id,
+.student-gender,
+.student-age {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .data_view {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        padding: 15px 0;
+    }
+    
+    .content {
+        padding: 15px;
+    }
+    
+    .student-avatar {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .no-avatar {
+        width: 70px;
+        height: 70px;
+    }
 }
 </style>
