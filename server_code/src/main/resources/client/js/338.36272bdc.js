@@ -1,0 +1,348 @@
+"use strict";
+(self["webpackChunkvue3_nf0"] = self["webpackChunkvue3_nf0"] || []).push([[338],{
+
+/***/ 338:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": function() { return /* binding */ register; }
+});
+
+// EXTERNAL MODULE: ./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
+var runtime_core_esm_bundler = __webpack_require__(641);
+// EXTERNAL MODULE: ./node_modules/@vue/shared/dist/shared.esm-bundler.js
+var shared_esm_bundler = __webpack_require__(33);
+// EXTERNAL MODULE: ./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js
+var reactivity_esm_bundler = __webpack_require__(953);
+// EXTERNAL MODULE: ./node_modules/vue-router/dist/vue-router.esm-bundler.js
+var vue_router_esm_bundler = __webpack_require__(6166);
+;// ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40.use[1]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/views/pages/cansaixuesheng/register.vue?vue&type=script&setup=true&lang=js
+
+const _hoisted_1 = {
+  class: "register_view"
+};
+const _hoisted_2 = {
+  class: "backgif"
+};
+const _hoisted_3 = {
+  class: "form",
+  style: {
+    "z-index": "1"
+  }
+};
+const _hoisted_4 = {
+  class: "projectName"
+};
+const _hoisted_5 = {
+  class: "register_form"
+};
+const _hoisted_6 = {
+  class: "list_item"
+};
+const _hoisted_7 = {
+  class: "list_item"
+};
+const _hoisted_8 = {
+  class: "list_item"
+};
+const _hoisted_9 = {
+  class: "list_item"
+};
+const _hoisted_10 = {
+  class: "list_item"
+};
+const _hoisted_11 = {
+  class: "list_item"
+};
+const _hoisted_12 = {
+  class: "list_item"
+};
+const _hoisted_13 = {
+  class: "list_file_list"
+};
+const _hoisted_14 = {
+  class: "list_item"
+};
+const _hoisted_15 = {
+  class: "list_item"
+};
+const _hoisted_16 = {
+  class: "list_item list_code"
+};
+const _hoisted_17 = {
+  class: "list_code_item"
+};
+
+
+/* harmony default export */ var registervue_type_script_setup_true_lang_js = ({
+  __name: 'register',
+  setup(__props) {
+    const context = (0,runtime_core_esm_bundler/* getCurrentInstance */.nI)()?.appContext.config.globalProperties;
+    const projectName = context.$project.projectName;
+    //获取注册类型
+    const route = (0,vue_router_esm_bundler/* useRoute */.lq)();
+    const tableName = (0,reactivity_esm_bundler/* ref */.KR)('cansaixuesheng');
+
+    //公共方法
+    const getUUID = () => {
+      return new Date().getTime();
+    };
+    const registerForm = (0,reactivity_esm_bundler/* ref */.KR)({
+      xingbie: ''
+    });
+    //验证码
+    const time = (0,reactivity_esm_bundler/* ref */.KR)(0);
+    const setCode = (0,reactivity_esm_bundler/* ref */.KR)('发送验证码');
+    const getCodeType = (0,reactivity_esm_bundler/* ref */.KR)(false);
+    const timer = () => {
+      if (time.value > 0) {
+        getCodeType.value = true;
+        setCode.value = time.value + 's';
+        time.value--;
+        setTimeout(() => {
+          timer();
+        }, 1000);
+      } else {
+        time.value = 0;
+        setCode.value = '发送验证码';
+        getCodeType.value = false;
+      }
+    };
+    //邮箱验证码
+    const emailCode = (0,reactivity_esm_bundler/* ref */.KR)('');
+    const getEmailCode = () => {
+      if (!registerForm.value.email) {
+        context?.$toolUtil.message(`邮箱不能为空`, 'error');
+        return false;
+      }
+      if (!context?.$toolUtil.isEmail(registerForm.value.email)) {
+        context?.$toolUtil.message(`邮箱格式不正确`, 'error');
+        return false;
+      }
+      time.value = 60;
+      timer();
+      context?.$http({
+        url: `${tableName.value}/sendemail?email=` + registerForm.value.email,
+        method: 'get'
+      }).then(res => {
+        context?.$toolUtil.message(`发送成功`, 'success');
+      });
+    };
+    const cansaixueshengxingbieLists = (0,reactivity_esm_bundler/* ref */.KR)([]);
+    const init = () => {
+      cansaixueshengxingbieLists.value = "男,女".split(',');
+    };
+    const touxiangUploadSuccess = fileUrls => {
+      registerForm.value.touxiang = fileUrls;
+    };
+
+    //注册按钮
+    const handleRegister = () => {
+      let url = tableName.value + "/register";
+      if (!registerForm.value.xuehao) {
+        context?.$toolUtil.message(`学号不能为空`, 'error');
+        return false;
+      }
+      if (registerForm.value.xuehao && String(registerForm.value.xuehao).length < 13) {
+        context?.$toolUtil.message(`学号长度不能小于13`, 'error');
+        return false;
+      }
+      if (registerForm.value.xuehao && String(registerForm.value.xuehao).length > 13) {
+        context?.$toolUtil.message(`学号长度不能大于13`, 'error');
+        return false;
+      }
+      if (!registerForm.value.mima) {
+        context?.$toolUtil.message(`密码不能为空`, 'error');
+        return false;
+      }
+      if (registerForm.value.mima != registerForm.value.mima2) {
+        context?.$toolUtil.message('两次密码输入不一致', 'error');
+        return false;
+      }
+      if (registerForm.value.nianling && !context?.$toolUtil.isIntNumer(registerForm.value.nianling)) {
+        context?.$toolUtil.message(`年龄应输入整数`, 'error');
+        return false;
+      }
+      if (registerForm.value.touxiang != null) {
+        registerForm.value.touxiang = registerForm.value.touxiang.replace(new RegExp(context?.$config.url, "g"), "");
+      }
+      if (registerForm.value.shouji && !context?.$toolUtil.isMobile(registerForm.value.shouji)) {
+        context?.$toolUtil.message(`手机应输入手机格式`, 'error');
+        return false;
+      }
+      if (registerForm.value.email && !context?.$toolUtil.isEmail(registerForm.value.email)) {
+        context?.$toolUtil.message(`邮箱应输入邮件格式`, 'error');
+        return false;
+      }
+      url = tableName.value + "/register?emailcode=" + emailCode.value;
+      if (registerForm.value.email && !context?.$toolUtil.isEmail(registerForm.value.email)) {
+        context?.$toolUtil.message('请输入正确的邮箱格式', 'error');
+        return false;
+      }
+      if (!emailCode.value) {
+        context?.$toolUtil.message('验证码不能为空', 'error');
+        return false;
+      }
+      context?.$http({
+        url: url,
+        method: 'post',
+        data: registerForm.value
+      }).then(res => {
+        context?.$toolUtil.message('注册成功', 'success', obj => {
+          context?.$router.push({
+            path: "/login"
+          });
+        });
+      });
+    };
+    //返回登录
+    const close = () => {
+      context?.$router.push({
+        path: "/login"
+      });
+    };
+    init();
+    (0,runtime_core_esm_bundler/* onMounted */.sV)(() => {});
+    return (_ctx, _cache) => {
+      const _component_el_input = (0,runtime_core_esm_bundler/* resolveComponent */.g2)("el-input");
+      const _component_el_option = (0,runtime_core_esm_bundler/* resolveComponent */.g2)("el-option");
+      const _component_el_select = (0,runtime_core_esm_bundler/* resolveComponent */.g2)("el-select");
+      const _component_uploads = (0,runtime_core_esm_bundler/* resolveComponent */.g2)("uploads");
+      const _component_el_button = (0,runtime_core_esm_bundler/* resolveComponent */.g2)("el-button");
+      return (0,runtime_core_esm_bundler/* openBlock */.uX)(), (0,runtime_core_esm_bundler/* createElementBlock */.CE)("div", _hoisted_1, [(0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_2, [(0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_3, [_cache[20] || (_cache[20] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "logo"
+      }, null, -1)), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_4, (0,shared_esm_bundler/* toDisplayString */.v_)((0,reactivity_esm_bundler/* unref */.R1)(projectName)) + "注册", 1), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_5, [(0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_6, [_cache[9] || (_cache[9] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "学号：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.xuehao,
+        "onUpdate:modelValue": _cache[0] || (_cache[0] = $event => registerForm.value.xuehao = $event),
+        placeholder: "请输入学号",
+        type: "text"
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_7, [_cache[10] || (_cache[10] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "姓名：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.xingming,
+        "onUpdate:modelValue": _cache[1] || (_cache[1] = $event => registerForm.value.xingming = $event),
+        placeholder: "请输入姓名",
+        type: "text"
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_8, [_cache[11] || (_cache[11] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "密码：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.mima,
+        "onUpdate:modelValue": _cache[2] || (_cache[2] = $event => registerForm.value.mima = $event),
+        placeholder: "请输入密码",
+        type: "password",
+        "show-password": ""
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_9, [_cache[12] || (_cache[12] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "确认密码：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.mima2,
+        "onUpdate:modelValue": _cache[3] || (_cache[3] = $event => registerForm.value.mima2 = $event),
+        type: "password",
+        placeholder: "请输入确认密码",
+        "show-password": ""
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_10, [_cache[13] || (_cache[13] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "性别：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_select, {
+        class: "list_sel",
+        modelValue: registerForm.value.xingbie,
+        "onUpdate:modelValue": _cache[4] || (_cache[4] = $event => registerForm.value.xingbie = $event),
+        placeholder: "请选择性别"
+      }, {
+        default: (0,runtime_core_esm_bundler/* withCtx */.k6)(() => [((0,runtime_core_esm_bundler/* openBlock */.uX)(true), (0,runtime_core_esm_bundler/* createElementBlock */.CE)(runtime_core_esm_bundler/* Fragment */.FK, null, (0,runtime_core_esm_bundler/* renderList */.pI)(cansaixueshengxingbieLists.value, item => {
+          return (0,runtime_core_esm_bundler/* openBlock */.uX)(), (0,runtime_core_esm_bundler/* createBlock */.Wv)(_component_el_option, {
+            label: item,
+            value: item
+          }, null, 8, ["label", "value"]);
+        }), 256))]),
+        _: 1
+      }, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_11, [_cache[14] || (_cache[14] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "年龄：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.nianling,
+        "onUpdate:modelValue": _cache[5] || (_cache[5] = $event => registerForm.value.nianling = $event),
+        placeholder: "请输入年龄",
+        type: "text"
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_12, [_cache[15] || (_cache[15] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "头像：", -1)), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_13, [(0,runtime_core_esm_bundler/* createVNode */.bF)(_component_uploads, {
+        action: "file/upload",
+        tip: "请上传头像",
+        fileUrls: registerForm.value.touxiang ? registerForm.value.touxiang : '',
+        onChange: touxiangUploadSuccess
+      }, null, 8, ["fileUrls"])])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_14, [_cache[16] || (_cache[16] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "手机：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.shouji,
+        "onUpdate:modelValue": _cache[6] || (_cache[6] = $event => registerForm.value.shouji = $event),
+        placeholder: "请输入手机",
+        type: "text"
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_15, [_cache[17] || (_cache[17] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label"
+      }, "邮箱：", -1)), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_inp",
+        modelValue: registerForm.value.email,
+        "onUpdate:modelValue": _cache[7] || (_cache[7] = $event => registerForm.value.email = $event),
+        placeholder: "邮箱"
+      }, null, 8, ["modelValue"])]), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_16, [_cache[18] || (_cache[18] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "list_label list_code_label"
+      }, "验证码：", -1)), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", _hoisted_17, [(0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_input, {
+        class: "list_code_inp",
+        modelValue: emailCode.value,
+        "onUpdate:modelValue": _cache[8] || (_cache[8] = $event => emailCode.value = $event),
+        placeholder: "请输入验证码"
+      }, null, 8, ["modelValue"]), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_button, {
+        class: "list_code_btn",
+        disabled: getCodeType.value,
+        type: getCodeType.value ? 'info' : 'primary',
+        onClick: getEmailCode
+      }, {
+        default: (0,runtime_core_esm_bundler/* withCtx */.k6)(() => [(0,runtime_core_esm_bundler/* createTextVNode */.eW)((0,shared_esm_bundler/* toDisplayString */.v_)(setCode.value), 1)]),
+        _: 1
+      }, 8, ["disabled", "type"])])])]), (0,runtime_core_esm_bundler/* createVNode */.bF)(_component_el_button, {
+        class: "register",
+        onClick: handleRegister
+      }, {
+        default: (0,runtime_core_esm_bundler/* withCtx */.k6)(() => _cache[19] || (_cache[19] = [(0,runtime_core_esm_bundler/* createTextVNode */.eW)("注册")])),
+        _: 1,
+        __: [19]
+      }), (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "back",
+        onClick: close
+      }, "已有账号，直接登录")]), _cache[21] || (_cache[21] = (0,runtime_core_esm_bundler/* createElementVNode */.Lk)("div", {
+        class: "gifdiv"
+      }, null, -1))])]);
+    };
+  }
+});
+;// ./src/views/pages/cansaixuesheng/register.vue?vue&type=script&setup=true&lang=js
+ 
+;// ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-22.use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-22.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-22.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-22.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/views/pages/cansaixuesheng/register.vue?vue&type=style&index=0&id=2b623356&lang=scss
+// extracted by mini-css-extract-plugin
+
+;// ./src/views/pages/cansaixuesheng/register.vue?vue&type=style&index=0&id=2b623356&lang=scss
+
+;// ./src/views/pages/cansaixuesheng/register.vue
+
+
+
+;
+
+const __exports__ = registervue_type_script_setup_true_lang_js;
+
+/* harmony default export */ var register = (__exports__);
+
+/***/ })
+
+}]);
+//# sourceMappingURL=338.36272bdc.js.map
