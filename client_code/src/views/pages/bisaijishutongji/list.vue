@@ -53,7 +53,7 @@
                         :class="isRecordTab ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-700 hover:bg-slate-50'"
                     >
                         <i class="el-icon-trophy"></i>
-                        比赛记录
+                        比赛成绩
                     </button>
                     <button
                         type="button"
@@ -100,7 +100,7 @@
                     </el-table-column>
                     <el-table-column label="得分" :resizable='true' align="center" header-align="center" class-name="score-column">
                         <template #default="scope">
-                            {{scope.row.defen}}
+                            <span>{{scope.row.defen}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="犯规" :resizable='true' align="center" header-align="center">
@@ -422,12 +422,327 @@
 	init()
 </script>
 <style lang="scss" scoped>
-.condition-box {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
+/* 容器与背景 */
+.min-h-screen {
+    background-color: #f8fafc; /* slate-50 */
 }
-.condition-box>* {
-    max-width: 300px;
+
+ /* 搜索区域美化 */
+.list_search {
+    background: #ffffff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+    .search_content {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .search_form {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .search_view {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        
+        .search_label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 10px;
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            border-radius: 999px;
+            
+            i {
+                color: #f97316;
+            }
+        }
+    }
+
+    .search_box {
+        width: 320px;
+    }
+
+    /* 按钮样式优化 */
+    .search_btn_view {
+        display: flex;
+        gap: 12px;
+        
+        .search_btn {
+            background-color: #f97316 !important;
+            border-color: #f97316 !important;
+            border-radius: 8px;
+            height: 40px;
+            padding: 0 20px;
+            font-weight: 500;
+            transition: all 0.2s;
+            
+            &:hover {
+                background-color: #ea580c !important;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.2);
+            }
+        }
+        
+        .add_btn {
+            background-color: #ffffff !important;
+            color: #f97316 !important;
+            border: 1.5px solid #f97316 !important;
+            border-radius: 8px;
+            height: 40px;
+            padding: 0 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+            
+            &:hover {
+                background-color: #fff7ed !important;
+                transform: translateY(-1px);
+            }
+        }
+    }
+
+    .chartBtn-row {
+        margin-top: 16px;
+        .chart_btn {
+            border-radius: 8px;
+            background-color: #fef3c7 !important;
+            border-color: #fcd34d !important;
+            color: #92400e !important;
+            font-weight: 500;
+            
+            &:hover {
+                background-color: #fde68a !important;
+            }
+        }
+    }
+}
+
+ /* 表格区域美化 */
+.table-view {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+    :deep(.el-table) {
+        --el-table-border-color: #f1f5f9;
+        --el-table-header-bg-color: #f8fafc;
+        font-size: 14px;
+        color: #334155;
+        font-variant-numeric: tabular-nums;
+
+        &.el-table--border {
+            border: 0;
+        }
+
+        .el-table__inner-wrapper::before {
+            background-color: transparent;
+        }
+
+        th.el-table__cell {
+            padding: 12px 0;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td.el-table__cell {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* 让内容更像参考图：左右留白更明显 */
+        .cell {
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        /* 弱化纵向分隔，贴近参考图的“轻表格” */
+        .el-table__cell {
+            border-right: 0 !important;
+        }
+
+        /* 斑马纹：极淡暖色 */
+        .el-table__body tbody tr:nth-child(even) {
+            background-color: #fffaf5;
+        }
+
+        .el-table__row {
+            transition: background-color 0.18s ease, box-shadow 0.18s ease;
+            &:hover {
+                background-color: #fff2e6 !important;
+            }
+        }
+
+        /* 复选框更精致 */
+        .el-checkbox__inner {
+            border-radius: 6px;
+        }
+        .el-checkbox__input.is-checked .el-checkbox__inner {
+            background-color: #f97316;
+            border-color: #f97316;
+        }
+    }
+}
+
+/* 核心：得分 Badge 样式（更醒目，参考图风格） */
+:deep(.score-column) {
+    .cell {
+        display: flex;
+        justify-content: center;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 26px;
+            padding: 0 12px;
+            background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 13px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+        }
+    }
+}
+
+/* 数值列（犯规/暂停）轻量灰胶囊 */
+:deep(.el-table) {
+    .el-table__body tbody tr td:nth-child(8) .cell,
+    .el-table__body tbody tr td:nth-child(9) .cell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 22px;
+        padding: 0 8px;
+        background-color: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 11px;
+        font-weight: 500;
+        font-size: 13px;
+    }
+}
+
+/* 时间/场地/记录时间更弱化 */
+:deep(.el-table) {
+    .el-table__body tbody tr td:nth-child(4) .cell,
+    .el-table__body tbody tr td:nth-child(5) .cell,
+    .el-table__body tbody tr td:nth-child(10) .cell {
+        color: #94a3b8;
+        font-size: 12px;
+    }
+}
+
+/* 赛事名称列更突出 */
+:deep(.el-table) {
+    .el-table__body tbody tr td:nth-child(3) .cell {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+}
+
+/* 球队名称列 */
+:deep(.el-table) {
+    .el-table__body tbody tr td:nth-child(6) .cell {
+        font-weight: 500;
+        color: #334155;
+    }
+}
+
+/* 球队名称点缀优化 */
+.team-name-with-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+    
+    .team-dot {
+        width: 6px;
+        height: 6px;
+        background-color: #f97316;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+}
+
+/* 分页美化 */
+.pagination-container {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+
+    :deep(.el-pagination.is-background) {
+        --el-pagination-border-radius: 8px;
+
+        .el-pager li {
+            border-radius: 8px;
+        }
+        .el-pager li:not(.is-active):hover {
+            color: #f97316;
+        }
+        .el-pager li.is-active {
+            background-color: #f97316 !important;
+        }
+        .btn-prev,
+        .btn-next {
+            border-radius: 8px;
+            &:hover {
+                color: #f97316;
+            }
+        }
+    }
+}
+
+/* 输入框聚焦效果 */
+:deep(.el-input__wrapper) {
+    border-radius: 8px;
+    transition: all 0.2s;
+    &.is-focus {
+        box-shadow: 0 0 0 1px #f97316 inset !important;
+    }
+}
+
+/* 弹窗样式 */
+:deep(.el-dialog) {
+    border-radius: 16px;
+    overflow: hidden;
+    .el-dialog__header {
+        margin-right: 0;
+        padding: 20px 24px;
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .el-dialog__title {
+        font-weight: 600;
+        color: #1e293b;
+    }
 }
 </style>

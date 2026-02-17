@@ -263,5 +263,168 @@
 	}
 	init()
 </script>
+
 <style lang="scss" scoped>
+    /* 搜索区域美化 - 橙色主题 */
+    .list_search {
+        /* ... */
+        padding: 18px 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+
+        .search_view {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .search_label {
+                color: #475569;
+                font-size: 14px;
+                font-weight: 500;
+                padding: 6px 10px;
+                background: #fff7ed;
+                border: 1px solid #ffedd5;
+                border-radius: 999px;
+            }
+        }
+
+        .search_box {
+            width: 200px;
+        }
+
+        .search_btn_view {
+            display: flex;
+            gap: 12px;
+
+            .search_btn {
+                background-color: #f97316 !important;
+                border-color: #f97316 !important;
+                border-radius: 8px;
+                height: 36px;
+                padding: 0 18px;
+                font-weight: 500;
+
+                &:hover {
+                    background-color: #ea580c !important;
+                }
+            }
+
+            .add_btn {
+                background-color: #ffffff !important;
+                color: #f97316 !important;
+                border: 1.5px solid #f97316 !important;
+                border-radius: 8px;
+                height: 36px;
+                padding: 0 18px;
+                font-weight: 600;
+
+                &:hover {
+                    background-color: #fff7ed !important;
+                }
+            }
+        }
+    }
+
+    /* 表格区域美化 */
+    .table_view {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+        :deep(.el-table) {
+            --el-table-border-color: #f1f5f9;
+            --el-table-header-bg-color: #f8fafc;
+            font-size: 14px;
+            color: #334155;
+
+            &.el-table--border {
+                border: 0;
+            }
+
+            th.el-table__cell {
+                padding: 12px 0;
+                font-weight: 600;
+                color: #64748b;
+                font-size: 12px;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            td.el-table__cell {
+                padding: 10px 0;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .cell {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            /* 斑马纹 */
+            .el-table__body tbody tr:nth-child(even) {
+                background-color: #fffaf5;
+            }
+
+            /* hover效果 */
+            .el-table__row {
+                transition: background-color 0.18s ease;
+                &:hover {
+                    background-color: #fff2e6 !important;
+                }
+            }
+
+            /* 复选框 */
+            .el-checkbox__inner {
+                border-radius: 6px;
+            }
+            .el-checkbox__input.is-checked .el-checkbox__inner {
+                background-color: #f97316;
+                border-color: #f97316;
+            }
+        }
+    }
+
+    /* 信息层级：主信息突出 */
+    :deep(.el-table) {
+        /* 赛事名称、球队名称、晋级赛事 */
+        .el-table__body tbody tr td:nth-child(3) .cell,
+        .el-table__body tbody tr td:nth-child(4) .cell,
+        .el-table__body tbody tr td:nth-child(8) .cell {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* 积分、排名做轻量胶囊 */
+        .el-table__body tbody tr td:nth-child(5) .cell,
+        .el-table__body tbody tr td:nth-child(6) .cell {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 22px;
+            padding: 0 8px;
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 11px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        /* 时间、账号类信息弱化 */
+        .el-table__body tbody tr td:nth-child(9) .cell,
+        .el-table__body tbody tr td:nth-child(10) .cell,
+        .el-table__body tbody tr td:nth-child(11) .cell {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+    }
 </style>
