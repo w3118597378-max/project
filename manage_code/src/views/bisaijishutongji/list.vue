@@ -38,7 +38,9 @@
 				@row-click="listChange">
 				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
 				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
+					<template #default="scope">
+						<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
 					:resizable='true'
@@ -48,7 +50,10 @@
 					prop="saishimingcheng"
 					label="赛事名称">
 					<template #default="scope">
-						{{scope.row.saishimingcheng}}
+						<div class="event-highlight">
+							<span class="event-dot"></span>
+							<span class="event-text">{{scope.row.saishimingcheng}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -81,7 +86,10 @@
 					prop="qiuduimingcheng"
 					label="球队名称">
 					<template #default="scope">
-						{{scope.row.qiuduimingcheng}}
+						<div class="team-name">
+							<span class="team-dot"></span>
+							<span class="team-text">{{scope.row.qiuduimingcheng}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -92,7 +100,7 @@
 					prop="defen"
 					label="得分">
 					<template #default="scope">
-						{{scope.row.defen}}
+						<span class="score_badge">{{scope.row.defen}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -103,7 +111,7 @@
 					prop="fangui"
 					label="犯规">
 					<template #default="scope">
-						{{scope.row.fangui}}
+						<span class="stat_pill">{{scope.row.fangui}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -114,7 +122,7 @@
 					prop="zanting"
 					label="暂停">
 					<template #default="scope">
-						{{scope.row.zanting}}
+						<span class="stat_pill">{{scope.row.zanting}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -506,6 +514,205 @@
 	init()
 </script>
 <style lang="scss" scoped>
+	// 序号胶囊样式
+	.index_pill{
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 10px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+		font-size: 13px;
+	}
+
+	// 赛事名称高亮样式
+	.event-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.event-dot{
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+			box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+		}
+		.event-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队名称样式
+	.team-name{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.team-dot{
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			flex-shrink: 0;
+			background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+			box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+		}
+		.team-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 得分Badge样式
+	.score_badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 50px;
+		height: 32px;
+		padding: 0 16px;
+		background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+		color: #ffffff;
+		border: none;
+		border-radius: 16px;
+		font-weight: 700;
+		font-size: 16px;
+		letter-spacing: 0.02em;
+		box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+	}
+
+	// 犯规/暂停胶囊样式
+	.stat_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28px;
+		height: 22px;
+		padding: 0 8px;
+		background-color: #f1f5f9;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 11px;
+		font-weight: 500;
+		font-size: 13px;
+	}
+
+	// 表格整体样式
+	:deep(.el-table){
+		--el-table-border-color: #f1f5f9;
+		--el-table-header-bg-color: #f8fafc;
+		font-size: 14px;
+		color: #334155;
+		font-variant-numeric: tabular-nums;
+		
+		.el-table__header-wrapper th.el-table__cell{
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			color: #475569;
+			font-size: 13px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		
+		// 斑马纹效果
+		.el-table__body tbody tr:nth-child(even) {
+			background-color: #fffaf5;
+		}
+		
+		// Hover效果
+		.el-table__row:hover {
+			background-color: #fff2e6 !important;
+		}
+		
+		.el-table__row td.el-table__cell{
+			border-bottom: 1px solid #f1f5f9;
+		}
+	}
+
+	// 赛事名称列更突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(3) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队名称列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(6) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 得分列最突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(7) .cell {
+			font-weight: 700;
+			font-size: 16px;
+		}
+	}
+
+	// 犯规/暂停列样式
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(9) .cell,
+		.el-table__body tbody tr td:nth-child(10) .cell {
+			// 使用stat_pill样式
+		}
+	}
+
+	// 时间相关列弱化
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(4) .cell,
+		.el-table__body tbody tr td:nth-child(5) .cell,
+		.el-table__body tbody tr td:nth-child(11) .cell,
+		.el-table__body tbody tr td:nth-child(12) .cell {
+			color: #64748b;
+			font-size: 13px;
+		}
+	}
+
+	// 按钮美化
+	:deep(.el-button) {
+		border-radius: 12px;
+		font-weight: 500;
+	}
+	:deep(.el-button--primary) {
+		background: #f97316 !important;
+		border-color: #f97316 !important;
+		box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+	}
+	:deep(.el-button--primary:hover) {
+		background: #ea580c !important;
+		border-color: #ea580c !important;
+	}
+	:deep(.el-button--success) {
+		background: #10b981 !important;
+		border-color: #10b981 !important;
+		box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+	}
+	:deep(.el-button--danger) {
+		border-radius: 12px;
+		box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+	}
+	:deep(.el-button--info) {
+		background: #6b7280 !important;
+		border-color: #6b7280 !important;
+		box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+	}
+	:deep(.el-button--warning) {
+		background: #f59e0b !important;
+		border-color: #f59e0b !important;
+		box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+	}
+
 	// 表格样式
 	.el-table {
 		:deep(.el-table__body-wrapper) {

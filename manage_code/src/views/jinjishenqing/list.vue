@@ -60,7 +60,9 @@
 				@row-click="listChange">
 				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
 				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
+					<template #default="scope">
+						<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
 					:resizable='true'
@@ -70,7 +72,10 @@
 					prop="saishimingcheng"
 					label="赛事名称">
 					<template #default="scope">
-						{{scope.row.saishimingcheng}}
+						<div class="event-highlight">
+							<span class="event-icon">🏆</span>
+							<span class="event-text">{{scope.row.saishimingcheng}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -81,7 +86,10 @@
 					prop="qiuduimingcheng"
 					label="球队名称">
 					<template #default="scope">
-						{{scope.row.qiuduimingcheng}}
+						<div class="team-highlight">
+							<span class="team-dot"></span>
+							<span class="team-text">{{scope.row.qiuduimingcheng}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -92,7 +100,7 @@
 					prop="qiuduijifen"
 					label="球队积分">
 					<template #default="scope">
-						{{scope.row.qiuduijifen}}
+						<span class="score_badge">{{scope.row.qiuduijifen}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -103,7 +111,7 @@
 					prop="bisaipaiming"
 					label="比赛排名">
 					<template #default="scope">
-						{{scope.row.bisaipaiming}}
+						<span class="ranking_pill">{{scope.row.bisaipaiming}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -114,7 +122,7 @@
 					prop="caipanzhanghao"
 					label="裁判账号">
 					<template #default="scope">
-						{{scope.row.caipanzhanghao}}
+						<span class="secondary_text">{{scope.row.caipanzhanghao}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -125,10 +133,10 @@
 					prop="caipanxingming"
 					label="裁判姓名">
 					<template #default="scope">
-						{{scope.row.caipanxingming}}
+						<span class="secondary_text">{{scope.row.caipanxingming}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column min-width="140"
+				<el-table-column min-width="160"
 					:resizable='true'
 					:sortable='false'
 					align="left"
@@ -136,10 +144,10 @@
 					prop="jinjisaishi"
 					label="晋级赛事">
 					<template #default="scope">
-						{{scope.row.jinjisaishi}}
+						<span class="light_pill">{{scope.row.jinjisaishi}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column min-width="140"
+				<el-table-column min-width="160"
 					:resizable='true'
 					:sortable='false'
 					align="left"
@@ -147,7 +155,7 @@
 					prop="shenqingshijian"
 					label="申请时间">
 					<template #default="scope">
-						{{scope.row.shenqingshijian}}
+						<span class="time_pill">{{scope.row.shenqingshijian}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -158,7 +166,7 @@
 					prop="duizhangzhanghao"
 					label="队长账号">
 					<template #default="scope">
-						{{scope.row.duizhangzhanghao}}
+						<span class="secondary_text">{{scope.row.duizhangzhanghao}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -169,27 +177,27 @@
 					prop="duizhangxingming"
 					label="队长姓名">
 					<template #default="scope">
-						{{scope.row.duizhangxingming}}
+						<span class="secondary_text">{{scope.row.duizhangxingming}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="审核回复" min-width="140" :resizable='true' :sortable='false' align="left" header-align="left">
+				<el-table-column label="审核回复" min-width="180" :resizable='true' :sortable='false' align="left" header-align="left">
 					<template #default="scope">
-						{{scope.row.shhf}}
+						<span class="light_pill reply_pill">{{scope.row.shhf}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column prop="sfsh" label="审核状态" min-width="140" :resizable='true' :sortable='false' align="left" header-align="left">
 					<template #default="scope">
-                        <div v-if="scope.row.sfsh=='是'" style="text-align: center">
-                            <img src="@/assets/img/pass.png" style="width: 50px;"/>
-                            <div>通过</div>
+                        <div v-if="scope.row.sfsh=='是'" class="status-badge approved">
+                            <span class="status-icon">✓</span>
+                            <span class="status-text">通过</span>
                         </div>
-                        <div v-else-if="scope.row.sfsh=='否'" style="text-align: center">
-                            <img src="@/assets/img/reject.png" style="width: 50px;"/>
-                            <div>未通过</div>
+                        <div v-else-if="scope.row.sfsh=='否'" class="status-badge rejected">
+                            <span class="status-icon">✗</span>
+                            <span class="status-text">未通过</span>
                         </div>
-                        <div v-else-if="scope.row.sfsh=='待审核'" style="text-align: center">
-                            <img src="@/assets/img/wait.png" style="width: 50px;"/>
-                            <div>待审核</div>
+                        <div v-else-if="scope.row.sfsh=='待审核'" class="status-badge pending">
+                            <span class="status-icon">⏳</span>
+                            <span class="status-text">待审核</span>
                         </div>
 					</template>
 				</el-table-column>
@@ -476,11 +484,255 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
+	// 序号胶囊样式
+	.index_pill{
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 10px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+		font-size: 13px;
+	}
+
+	// 赛事名称高亮样式
+	.event-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.event-icon{
+			font-size: 14px;
 		}
+		.event-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队名称高亮样式
+	.team-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.team-dot{
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+			box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+		}
+		.team-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队积分Badge样式
+	.score_badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 50px;
+		height: 32px;
+		padding: 0 16px;
+		background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+		color: #ffffff;
+		border-radius: 16px;
+		font-weight: 700;
+		font-size: 16px;
+		box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+	}
+
+	// 比赛排名胶囊样式
+	.ranking_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 24px;
+		padding: 0 10px;
+		background-color: #f1f5f9;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 13px;
+	}
+
+	// 次要信息弱化样式
+	.secondary_text{
+		color: #64748b;
+		font-size: 13px;
+	}
+
+	// 轻量胶囊样式
+	.light_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 60px;
+		height: 24px;
+		padding: 0 12px;
+		background-color: #f1f5f9;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 13px;
+		white-space: nowrap;
+	}
+	
+	// 审核回复特殊样式
+	.reply_pill{
+		min-width: 100px;
+		max-width: 160px;
+		height: auto;
+		min-height: 24px;
+		padding: 6px 12px;
+		white-space: normal;
+		word-break: break-all;
+		line-height: 1.4;
+		text-align: center;
+	}
+
+	// 时间胶囊样式
+	.time_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 80px;
+		height: 24px;
+		padding: 0 12px;
+		background-color: #f8fafc;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
+	// 审核状态Badge样式
+	.status-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 80px;
+		height: 28px;
+		padding: 0 12px;
+		border-radius: 14px;
+		font-weight: 600;
+		font-size: 12px;
+		&.approved{
+			background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+			color: #ffffff;
+			box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+		}
+		&.rejected{
+			background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+			color: #ffffff;
+			box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
+		}
+		&.pending{
+			background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+			color: #ffffff;
+			box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25);
+		}
+		.status-icon{
+			font-size: 14px;
+		}
+		.status-text{
+			font-weight: 600;
+		}
+	}
+
+	// 表格整体样式
+	:deep(.el-table){
+		--el-table-border-color: #f1f5f9;
+		--el-table-header-bg-color: #f8fafc;
+		font-size: 14px;
+		color: #334155;
+		font-variant-numeric: tabular-nums;
+		
+		.el-table__header-wrapper th.el-table__cell{
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			color: #475569;
+			font-size: 13px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		
+		// 斑马纹效果
+		.el-table__body tbody tr:nth-child(even) {
+			background-color: #fffaf5;
+		}
+		
+		// Hover效果
+		.el-table__row:hover {
+			background-color: #fff2e6 !important;
+		}
+		
+		.el-table__row td.el-table__cell{
+			border-bottom: 1px solid #f1f5f9;
+		}
+	}
+
+	// 赛事名称列更突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(3) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队名称列更突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(4) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 球队积分列最突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(5) .cell {
+			font-weight: 700;
+			color: #ea580c;
+			font-size: 16px;
+		}
+	}
+
+	// 按钮美化
+	:deep(.el-button) {
+		border-radius: 12px;
+		font-weight: 500;
+	}
+	:deep(.el-button--primary) {
+		background: #f97316 !important;
+		border-color: #f97316 !important;
+		box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+	}
+	:deep(.el-button--primary:hover) {
+		background: #ea580c !important;
+		border-color: #ea580c !important;
+	}
+	:deep(.el-button--success) {
+		background: #10b981 !important;
+		border-color: #10b981 !important;
+		box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+	}
+	:deep(.el-button--danger) {
+		border-radius: 12px;
+		box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 	}
 </style>

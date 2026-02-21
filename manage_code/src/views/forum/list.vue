@@ -54,7 +54,9 @@
 				@row-click="listChange">
 				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
 				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
+					<template #default="scope">
+						<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
 					:resizable='true'
@@ -65,7 +67,10 @@
 					v-if="!forumChild"
 					label="帖子标题">
 					<template #default="scope">
-						{{scope.row.title}}
+						<div class="post-title-highlight">
+							<span class="title-icon">📝</span>
+							<span class="title-text">{{scope.row.title}}</span>
+						</div>
 					</template>
 				</el-table-column>
                 <el-table-column label="帖子内容" v-if="forumChild" min-width="140" :resizable='true' :sortable='false' align="left" header-align="left">
@@ -81,7 +86,10 @@
 					prop="username"
 					label="用户名">
 					<template #default="scope">
-						{{scope.row.username}}
+						<div class="user-highlight">
+							<span class="user-icon">👤</span>
+							<span class="user-text">{{scope.row.username}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -93,7 +101,17 @@
 					v-if="!forumChild"
 					label="状态">
 					<template #default="scope">
-						{{scope.row.isdone}}
+						<span v-if="scope.row.isdone=='开放'" class="status-badge open">
+							<span class="status-icon">🟢</span>
+							<span class="status-text">开放</span>
+						</span>
+						<span v-else-if="scope.row.isdone=='关闭'" class="status-badge closed">
+							<span class="status-icon">🔴</span>
+							<span class="status-text">关闭</span>
+						</span>
+						<span v-else class="status-badge normal">
+							<span class="status-text">{{scope.row.isdone}}</span>
+						</span>
 					</template>
 				</el-table-column>
                 <el-table-column v-if="btnAuth('forum','修改') && !forumChild" prop="isTop" label="是否置顶" :resizable='true' :sortable='false' align="left" header-align="left">
@@ -114,7 +132,7 @@
 					v-if="!forumChild"
 					label="置顶时间">
 					<template #default="scope">
-						{{scope.row.topTime}}
+						<span class="time_pill">{{scope.row.topTime}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -125,31 +143,48 @@
 					prop="typeName"
 					label="分类名称">
 					<template #default="scope">
-						{{scope.row.typeName}}
+						<span class="category-badge">{{scope.row.typeName}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="封面" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
 					<template #default="scope">
-						<div v-if="scope.row.cover">
+						<div v-if="scope.row.cover" class="cover-container">
 							<el-image v-if="scope.row.cover.substring(0,4)=='http'" preview-teleported
 								:preview-src-list="[scope.row.cover.split(',')[0]]"
-								:src="scope.row.cover.split(',')[0]" style="width:100px;height:100px"></el-image>
+								:src="scope.row.cover.split(',')[0]" class="cover-image"></el-image>
 							<el-image v-else preview-teleported
 								:preview-src-list="[$config.url+scope.row.cover.split(',')[0]]"
-								:src="$config.url+scope.row.cover.split(',')[0]" style="width:100px;height:100px">
+								:src="$config.url+scope.row.cover.split(',')[0]" class="cover-image">
 							</el-image>
 						</div>
-						<div v-else>无图片</div>
+						<div v-else class="no-cover">
+							<span class="no-cover-icon">🖼️</span>
+							<span class="no-cover-text">无图片</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140" prop="isAnonymous" label="是否匿名">
 					<template #default="scope">
-						{{scope.row.isAnonymous>0?'是':'否'}}
+						<span v-if="scope.row.isAnonymous>0" class="anonymous-badge yes">
+							<span class="anonymous-icon">👤</span>
+							<span class="anonymous-text">匿名</span>
+						</span>
+						<span v-else class="anonymous-badge no">
+							<span class="anonymous-icon">👤</span>
+							<span class="anonymous-text">实名</span>
+						</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140" prop="isDel" label="是否删除">
 					<template #default="scope">
-						{{scope.row.isDel>0?'是':'否'}}
+						<span v-if="scope.row.isDel>0" class="delete-badge yes">
+							<span class="delete-icon">🚫</span>
+							<span class="delete-text">已删除</span>
+						</span>
+						<span v-else class="delete-badge no">
+							<span class="delete-icon">👍</span>
+							<span class="delete-text">正常</span>
+						</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -161,7 +196,10 @@
 					v-if="!forumChild"
 					label="赞">
 					<template #default="scope">
-						{{scope.row.thumbsupNumber}}
+						<div class="thumbsup-badge">
+							<span class="thumbsup-icon">👍</span>
+							<span class="thumbsup-number">{{scope.row.thumbsupNumber}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
@@ -579,20 +617,343 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
-		}
-	}
-	.condition-box {
-		display: flex;
-		gap: 10px;
+	// 序号胶囊样式
+	.index_pill{
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
 		justify-content: center;
+		border-radius: 10px;
+		background: #f9fafb;
+		color: #6b7280;
+		font-weight: 600;
+		font-size: 13px;
 	}
 
-	.condition-box>* {
-		max-width: 300px;
+	// 帖子标题高亮样式
+	.post-title-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.title-icon{
+			font-size: 14px;
+		}
+		.title-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 用户名高亮样式
+	.user-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.user-icon{
+			font-size: 14px;
+		}
+		.user-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 状态Badge样式
+	.status-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 60px;
+		height: 28px;
+		padding: 0 12px;
+		border-radius: 14px;
+		font-weight: 600;
+		font-size: 13px;
+		&.open{
+			background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+			color: #166534;
+			border: 1px solid #86efac;
+		}
+		&.closed{
+			background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+			color: #991b1b;
+			border: 1px solid #fca5a5;
+		}
+		&.normal{
+			background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+			color: #64748b;
+			border: 1px solid #cbd5e1;
+		}
+		.status-icon{
+			font-size: 14px;
+		}
+		.status-text{
+			font-weight: 600;
+		}
+	}
+
+	// 时间胶囊样式
+	.time_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 80px;
+		height: 24px;
+		padding: 0 12px;
+		background-color: #f1f5f9;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
+	// 分类Badge样式
+	.category-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 60px;
+		height: 24px;
+		padding: 0 12px;
+		background-color: #fef3c7;
+		color: #92400e;
+		border: 1px solid #fed7aa;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
+	// 封面图片样式
+	.cover-container{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		.cover-image{
+			width: 60px;
+			height: 60px;
+			border-radius: 8px;
+			object-fit: cover;
+			border: 2px solid #f1f5f9;
+		}
+	}
+	.no-cover{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		width: 60px;
+		height: 60px;
+		background: #f8fafc;
+		border: 2px dashed #e2e8f0;
+		border-radius: 8px;
+		.no-cover-icon{
+			font-size: 16px;
+		}
+		.no-cover-text{
+			font-size: 10px;
+			color: #94a3b8;
+		}
+	}
+
+	// 匿名状态Badge样式
+	.anonymous-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 60px;
+		height: 24px;
+		padding: 0 10px;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 12px;
+		&.yes{
+			background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+			color: #6b7280;
+			border: 1px solid #d1d5db;
+		}
+		&.no{
+			background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+			color: #065f46;
+			border: 1px solid #6ee7b7;
+		}
+		.anonymous-icon{
+			font-size: 14px;
+		}
+		.anonymous-text{
+			font-weight: 500;
+		}
+	}
+
+	// 删除状态Badge样式
+	.delete-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 60px;
+		height: 24px;
+		padding: 0 10px;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 12px;
+		&.yes{
+			background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+			color: #991b1b;
+			border: 1px solid #fca5a5;
+		}
+		&.no{
+			background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+			color: #166534;
+			border: 1px solid #86efac;
+		}
+		.delete-icon{
+			font-size: 14px;
+		}
+		.delete-text{
+			font-weight: 500;
+		}
+	}
+
+	// 点赞Badge样式
+	.thumbsup-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 50px;
+		height: 28px;
+		padding: 0 12px;
+		background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+		color: #92400e;
+		border: 1px solid #fbbf24;
+		border-radius: 14px;
+		font-weight: 600;
+		font-size: 13px;
+		.thumbsup-icon{
+			font-size: 14px;
+		}
+		.thumbsup-number{
+			font-weight: 700;
+		}
+	}
+
+	// 表格整体样式
+	:deep(.el-table){
+		--el-table-border-color: #f1f5f9;
+		--el-table-header-bg-color: #f8fafc;
+		font-size: 14px;
+		color: #334155;
+		font-variant-numeric: tabular-nums;
+		
+		.el-table__header-wrapper th.el-table__cell{
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			color: #475569;
+			font-size: 13px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		
+		// 斑马纹效果
+		.el-table__body tbody tr:nth-child(even) {
+			background-color: #f9fafb;
+		}
+		
+		// Hover效果
+		.el-table__row:hover {
+			background-color: #f3f4f6 !important;
+		}
+		
+		.el-table__row td.el-table__cell{
+			border-bottom: 1px solid #f1f5f9;
+		}
+	}
+
+	// 帖子标题列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(3) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 用户名列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(4) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 状态列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(5) .cell {
+			font-weight: 600;
+			font-size: 13px;
+		}
+	}
+
+	// 分类名称列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(9) .cell {
+			font-weight: 500;
+			color: #92400e;
+			font-size: 13px;
+		}
+	}
+
+	// 赞数列最突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(12) .cell {
+			font-weight: 700;
+			color: #92400e;
+			font-size: 13px;
+		}
+	}
+
+	// 按钮美化
+	:deep(.el-button) {
+		border-radius: 8px;
+		font-weight: 500;
+	}
+	:deep(.el-button--primary) {
+		background: #6366f1 !important;
+		border-color: #6366f1 !important;
+		box-shadow: 0 1px 3px rgba(99, 102, 241, 0.2);
+	}
+	:deep(.el-button--primary:hover) {
+		background: #4f46e5 !important;
+		border-color: #4f46e5 !important;
+	}
+	:deep(.el-button--success) {
+		background: #10b981 !important;
+		border-color: #10b981 !important;
+		box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+	}
+	:deep(.el-button--danger) {
+		border-radius: 8px;
+		box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+	}
+	:deep(.el-button--info) {
+		background: #6b7280 !important;
+		border-color: #6b7280 !important;
+		box-shadow: 0 1px 3px rgba(107, 114, 128, 0.2);
+	}
+	:deep(.el-button--warning) {
+		background: #f59e0b !important;
+		border-color: #f59e0b !important;
+		box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
 	}
 </style>

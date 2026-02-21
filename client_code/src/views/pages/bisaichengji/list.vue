@@ -48,7 +48,7 @@
                         :class="isRecordTab ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20' : 'bg-white text-slate-700 hover:bg-slate-50'"
                     >
                         <i class="el-icon-trophy"></i>
-                        比赛记录
+                        比赛成绩
                     </button>
                     <button
                         type="button"

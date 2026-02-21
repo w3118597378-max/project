@@ -95,7 +95,12 @@
 								<template #default="scope">{{scope.row.duizhangzhanghao}}</template>
 							</el-table-column>
 							<el-table-column min-width="140" :resizable='true' :sortable='false' align="left" header-align="left" prop="duizhangxingming" label="队长姓名">
-								<template #default="scope">{{scope.row.duizhangxingming}}</template>
+								<template #default="scope">
+									<div class="captain-name">
+										<span class="name-dot"></span>
+										<span class="name-text">{{scope.row.duizhangxingming}}</span>
+									</div>
+								</template>
 							</el-table-column>
 							<el-table-column label="照片" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
 								<template #default="scope">
@@ -117,7 +122,12 @@
 								<template #default="scope">{{scope.row.dianhua}}</template>
 							</el-table-column>
 							<el-table-column min-width="160" :resizable='true' :sortable='false' align="left" header-align="left" prop="qiuduimingcheng" label="球队名称">
-								<template #default="scope">{{scope.row.qiuduimingcheng}}</template>
+								<template #default="scope">
+									<div class="team-name">
+										<span class="team-dot"></span>
+										<span class="team-text">{{scope.row.qiuduimingcheng}}</span>
+									</div>
+								</template>
 							</el-table-column>
 							<el-table-column label="审核回复" min-width="180" :resizable='true' :sortable='false' align="left" header-align="left">
 								<template #default="scope">{{scope.row.shhf}}</template>
@@ -531,55 +541,103 @@
 		color: #ea580c;
 		font-weight: 700;
 	}
-	.muted{
-		color: #94a3b8;
-		font-size: 12px;
+
+	// 队长姓名样式
+	.captain-name{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.name-dot{
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+			box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+		}
+		.name-text{
+			font-weight: 600;
+			color: #1e293b;
+		}
+	}
+
+	// 球队名称样式
+	.team-name{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.team-dot{
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+			box-shadow: 0 2px 4px rgba(249, 115, 22, 0.25);
+		}
+		.team-text{
+			font-weight: 600;
+			color: #1e293b;
+		}
+	}
+
+	:deep(.data_table){
+		--el-table-border-color: #f1f5f9;
+		--el-table-header-bg-color: #f8fafc;
+		font-size: 14px;
+		color: #334155;
+		font-variant-numeric: tabular-nums;
+		
+		.el-table__header-wrapper th.el-table__cell{
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			color: #475569;
+			font-size: 13px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		
+		// 斑马纹效果
+		.el-table__body tbody tr:nth-child(even) {
+			background-color: #fffaf5;
+		}
+		
+		// Hover效果
+		.el-table__row:hover {
+			background-color: #fff2e6 !important;
+		}
+		
+		.el-table__row td.el-table__cell{
+			border-bottom: 1px solid #f1f5f9;
+		}
 	}
 
 	.status_badge{
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 6px 10px;
+		padding: 6px 12px;
 		border-radius: 999px;
 		font-size: 12px;
 		font-weight: 700;
 		border: 1px solid transparent;
 		white-space: nowrap;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 	.status_badge--pass{
-		background: #ecfdf5;
-		color: #059669;
-		border-color: #a7f3d0;
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+		color: #ffffff;
+		border-color: #10b981;
+		box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
 	}
 	.status_badge--reject{
-		background: #fef2f2;
-		color: #dc2626;
-		border-color: #fecaca;
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+		color: #ffffff;
+		border-color: #ef4444;
+		box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
 	}
 	.status_badge--wait{
-		background: #fffbeb;
-		color: #d97706;
-		border-color: #fde68a;
-	}
-
-	:deep(.data_table){
-		--el-table-border-color: transparent;
-		--el-table-border: 0;
-	}
-	:deep(.data_table .el-table__header-wrapper th.el-table__cell){
-		background: #f8fafc;
-		border-bottom: 1px solid #e2e8f0;
-		color: #475569;
-		font-size: 12px;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-	:deep(.data_table .el-table__row td.el-table__cell){
-		border-bottom: 1px solid #f1f5f9;
-	}
-	:deep(.data_table .el-table__row:hover td.el-table__cell){
-		background: #f8fafc;
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		color: #ffffff;
+		border-color: #f59e0b;
+		box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25);
 	}
 </style>

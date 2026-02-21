@@ -48,7 +48,9 @@
 				@row-click="listChange">
 				<el-table-column :resizable='true' align="left" header-align="left" type="selection" width="55" />
 				<el-table-column label="序号" width="70" :resizable='true' align="left" header-align="left">
-					<template #default="scope">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</template>
+					<template #default="scope">
+						<div class="index_pill">{{ (listQuery.page-1)*listQuery.limit+scope.$index + 1}}</div>
+					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
 					:resizable='true'
@@ -58,7 +60,7 @@
 					prop="xuehao"
 					label="学号">
 					<template #default="scope">
-						{{scope.row.xuehao}}
+						<span class="student_id_badge">{{scope.row.xuehao}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -69,7 +71,10 @@
 					prop="xingming"
 					label="姓名">
 					<template #default="scope">
-						{{scope.row.xingming}}
+						<div class="student-highlight">
+							<span class="student-icon">👨‍🎓</span>
+							<span class="student-text">{{scope.row.xingming}}</span>
+						</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -80,7 +85,14 @@
 					prop="xingbie"
 					label="性别">
 					<template #default="scope">
-						{{scope.row.xingbie}}
+						<span v-if="scope.row.xingbie=='男'" class="gender-badge male">
+							<span class="gender-icon">👦</span>
+							<span class="gender-text">男</span>
+						</span>
+						<span v-else-if="scope.row.xingbie=='女'" class="gender-badge female">
+							<span class="gender-icon">👧</span>
+							<span class="gender-text">女</span>
+						</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -91,21 +103,21 @@
 					prop="nianling"
 					label="年龄">
 					<template #default="scope">
-						{{scope.row.nianling}}
+						<span class="light_pill">{{scope.row.nianling}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="头像" min-width="140" width="120" :resizable='true' :sortable='false' align="left" header-align="left">
 					<template #default="scope">
-						<div v-if="scope.row.touxiang">
+						<div v-if="scope.row.touxiang" class="avatar-container">
 							<el-image v-if="scope.row.touxiang.substring(0,4)=='http'" preview-teleported
 								:preview-src-list="[scope.row.touxiang.split(',')[0]]"
-								:src="scope.row.touxiang.split(',')[0]" style="width:100px;height:100px"></el-image>
+								:src="scope.row.touxiang.split(',')[0]" class="student-avatar"></el-image>
 							<el-image v-else preview-teleported
 								:preview-src-list="[$config.url+scope.row.touxiang.split(',')[0]]"
-								:src="$config.url+scope.row.touxiang.split(',')[0]" style="width:100px;height:100px">
+								:src="$config.url+scope.row.touxiang.split(',')[0]" class="student-avatar">
 							</el-image>
 						</div>
-						<div v-else>无图片</div>
+						<div v-else class="no-avatar">无图片</div>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -116,7 +128,7 @@
 					prop="shouji"
 					label="手机">
 					<template #default="scope">
-						{{scope.row.shouji}}
+						<span class="light_pill">{{scope.row.shouji}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column min-width="140"
@@ -127,7 +139,7 @@
 					prop="email"
 					label="邮箱">
 					<template #default="scope">
-						{{scope.row.email}}
+						<span class="secondary_text">{{scope.row.email}}</span>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" class-name="operation-cell" width="300"  :resizable='true' :sortable='false' align="left" header-align="left">
@@ -452,20 +464,214 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	// 表格样式
-	.el-table {
-		:deep(.el-table__body-wrapper) {
-			tbody {
-			}
-		}
-	}
-	.condition-box {
-		display: flex;
-		gap: 10px;
+	// 序号胶囊样式
+	.index_pill{
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
 		justify-content: center;
+		border-radius: 10px;
+		background: #fff7ed;
+		color: #ea580c;
+		font-weight: 700;
+		font-size: 13px;
 	}
 
-	.condition-box>* {
-		max-width: 300px;
+	// 学生姓名高亮样式
+	.student-highlight{
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		.student-icon{
+			font-size: 14px;
+		}
+		.student-text{
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 学号Badge样式
+	.student_id_badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 80px;
+		height: 28px;
+		padding: 0 12px;
+		background-color: #fef3c7;
+		color: #92400e;
+		border: 1px solid #fed7aa;
+		border-radius: 8px;
+		font-weight: 500;
+		font-size: 12px;
+	}
+
+	// 性别Badge样式
+	.gender-badge{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 60px;
+		height: 28px;
+		padding: 0 12px;
+		border-radius: 8px;
+		font-weight: 500;
+		font-size: 12px;
+		&.male{
+			background-color: #dbeafe;
+			color: #1e40af;
+			border: 1px solid #bfdbfe;
+		}
+		&.female{
+			background-color: #fce7f3;
+			color: #9f1239;
+			border: 1px solid #fbcfe8;
+		}
+		.gender-icon{
+			font-size: 14px;
+		}
+		.gender-text{
+			font-weight: 500;
+		}
+	}
+
+	// 头像容器样式
+	.avatar-container{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.student-avatar{
+			width: 60px;
+			height: 60px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 3px solid #fff;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+	}
+	.no-avatar{
+		color: #9ca3af;
+		font-size: 12px;
+		text-align: center;
+	}
+
+	// 轻量胶囊样式
+	.light_pill{
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 60px;
+		height: 24px;
+		padding: 0 12px;
+		background-color: #f1f5f9;
+		color: #64748b;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		font-weight: 500;
+		font-size: 13px;
+		white-space: nowrap;
+	}
+
+	// 次要信息弱化样式
+	.secondary_text{
+		color: #64748b;
+		font-size: 13px;
+	}
+
+	// 表格整体样式
+	:deep(.el-table){
+		--el-table-border-color: #f1f5f9;
+		--el-table-header-bg-color: #f8fafc;
+		font-size: 14px;
+		color: #334155;
+		font-variant-numeric: tabular-nums;
+		
+		.el-table__header-wrapper th.el-table__cell{
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			color: #475569;
+			font-size: 13px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+		
+		// 斑马纹效果
+		.el-table__body tbody tr:nth-child(even) {
+			background-color: #f9fafb;
+		}
+		
+		// Hover效果
+		.el-table__row:hover {
+			background-color: #f3f4f6 !important;
+		}
+		
+		.el-table__row td.el-table__cell{
+			border-bottom: 1px solid #f1f5f9;
+		}
+	}
+
+	// 学号列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(3) .cell {
+			font-weight: 500;
+			color: #92400e;
+			font-size: 13px;
+		}
+	}
+
+	// 姓名列更突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(4) .cell {
+			font-weight: 600;
+			color: #1e293b;
+			font-size: 14px;
+		}
+	}
+
+	// 性别列突出
+	:deep(.el-table){
+		.el-table__body tbody tr td:nth-child(5) .cell {
+			font-weight: 500;
+			font-size: 13px;
+		}
+	}
+
+	// 按钮美化
+	:deep(.el-button) {
+		border-radius: 8px;
+		font-weight: 500;
+	}
+	:deep(.el-button--primary) {
+		background: #6366f1 !important;
+		border-color: #6366f1 !important;
+		box-shadow: 0 1px 3px rgba(99, 102, 241, 0.2);
+	}
+	:deep(.el-button--primary:hover) {
+		background: #4f46e5 !important;
+		border-color: #4f46e5 !important;
+	}
+	:deep(.el-button--success) {
+		background: #10b981 !important;
+		border-color: #10b981 !important;
+		box-shadow: 0 1px 3px rgba(16, 185, 129, 0.2);
+	}
+	:deep(.el-button--danger) {
+		border-radius: 8px;
+		box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+	}
+	:deep(.el-button--info) {
+		background: #6b7280 !important;
+		border-color: #6b7280 !important;
+		box-shadow: 0 1px 3px rgba(107, 114, 128, 0.2);
+	}
+	:deep(.el-button--warning) {
+		background: #f59e0b !important;
+		border-color: #f59e0b !important;
+		box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
 	}
 </style>
