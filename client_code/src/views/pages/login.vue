@@ -155,7 +155,7 @@
 
 <style lang="scss">
 	.login_view {
-        background-image: url("http://clfile.zggen.cn/20251107/a3f7bd5b156b4029821cff6fc65ec515.png")!important;
+        background-image: url("@/assets/images/basketball-bg.jpg")!important;
 	}
 .login_view {
     background: #F1FAFF;
@@ -709,7 +709,7 @@ text-transform: none;
 .login_view .gifdiv {
     width:50%;
     height:100%;
-     background:url('http://clfile.zggen.cn/20251107/ed4301675bd844ba968a859889e0679f.png')no-repeat;
+     background:url('@/assets/images/e9dd908f3044af94992249978ecaa52a.jpg')no-repeat;
         background-size:100% 100%;
 }
 .login_view .form-item{

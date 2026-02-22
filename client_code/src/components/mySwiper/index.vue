@@ -359,11 +359,88 @@
 <style lang="scss">
 	.swiper {
 		width: 100%;
-
+		
 		.slide {
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			position: relative;
+			border-radius: var(--border-radius-lg, 12px);
+			overflow: hidden;
 		}
+		
+		.slide img {
+			border-radius: var(--border-radius-lg, 12px);
+			transition: transform 0.3s ease;
+		}
+		
+		.slide:hover img {
+			transform: scale(1.02);
+		}
+	}
+	
+	/* 轮播按钮样式优化 */
+	.swiper-button-prev,
+	.swiper-button-next {
+		width: 48px;
+		height: 48px;
+		background: rgba(255, 255, 255, 0.9);
+		border: none;
+		border-radius: 50%;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0;
+		transition: all 0.3s ease;
+		box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+		z-index: 10;
+	}
+	
+	.swiper:hover .swiper-button-prev,
+	.swiper:hover .swiper-button-next {
+		opacity: 1;
+	}
+	
+	.swiper-button-prev:hover,
+	.swiper-button-next:hover {
+		background: white;
+		transform: scale(1.1);
+	}
+	
+	.swiper-button-prev:after,
+	.swiper-button-next:after {
+		font-size: 18px;
+		color: #2c3e50;
+		font-weight: 600;
+	}
+	
+	/* 轮播指示器样式优化 */
+	.swiper-pagination {
+		bottom: 24px;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		gap: 8px;
+		z-index: 10;
+	}
+	
+	.swiper-pagination-bullet {
+		width: 32px;
+		height: 4px;
+		background: rgba(255, 255, 255, 0.5);
+		border-radius: 2px;
+		opacity: 1;
+		transition: all 0.3s ease;
+		cursor: pointer;
+	}
+	
+	.swiper-pagination-bullet-active {
+		background: white;
+		width: 48px;
+	}
+	
+	.swiper-pagination-bullet:hover {
+		background: rgba(255, 255, 255, 0.8);
 	}
 </style>

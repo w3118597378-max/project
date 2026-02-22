@@ -159,7 +159,7 @@
 
 <style lang="scss">
 	.login_view {
-        background-image: url("http://clfile.zggen.cn/20250728/efa8c4527e0d4b5fa31b9fa123463b16.webp")!important;
+        background-image: url("@/assets/img/83aa71063860bd5f76fd2ee4e12794d5.jpg")!important;
 	}
 .login_view {
     background-color:none;
@@ -376,7 +376,7 @@ flex-shrink: 0;
 width: 601.2px;
 height: 634.5px;
 
-  background-image: url('http://clfile.zggen.cn/20250825/224f9c30281b40e684838fb061db7595.png');
+  background-image: url('@/assets/img/b3a5c778a91aaf66a44dd921d9949d08.jpg');
   background-size: cover;  /* 保证图片覆盖整个容器 */
   background-position: top center;  /* 调整图片显示的部分 */
   background-repeat: no-repeat;
